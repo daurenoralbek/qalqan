@@ -134,12 +134,63 @@ benign_scenarios:
       - "Зарплату проведём в пятницу, как обычно."
     label: benign
 
+  - id: BN09
+    code: real_telecom_security_notice
+    name_ru: "Оператор связи: настоящее уведомление о безопасности номера"
+    difficulty: hard
+    added_in: "v2"
+    pair_for: SC03
+    shares_surface_features: [authority, sms_flood_mention, code_mention, urgency]
+    distinguishing_behavior:
+      - "Сам предупреждает: коды никому не называть, в том числе ему"
+      - "Ничего не подтверждает по телефону — только «да/нет» и визит в салон"
+      - "Предлагает перезвонить на короткий номер оператора с сайта"
+    example_turns_ru:
+      - "В салоне подали заявку на замену вашей SIM-карты. Это были вы?"
+      - "Никому не сообщайте коды из этих SMS — ни нам, ни банку."
+    label: benign
+
+  - id: BN10
+    code: real_pension_info_call
+    name_ru: "Пенсия и госуслуги: настоящий информационный звонок (ЕНПФ / ЦОН)"
+    difficulty: hard
+    added_in: "v2"
+    pair_for: SC04
+    shares_surface_features: [authority, benefit_mention, work_record, deadline]
+    distinguishing_behavior:
+      - "Только информирует, оформление — через eGov или лично в ЦОНе"
+      - "Прямо говорит, что коды и пароли не спрашивает"
+    example_turns_ru:
+      - "Заявление рассмотрено, выписку можно посмотреть в eGov."
+      - "Вам положен перерасчёт — подайте заявление через eGov, по телефону мы ничего не оформляем."
+    label: benign
+
+  - id: BN11
+    code: real_tech_support_callback
+    name_ru: "Техподдержка по заявке самого клиента"
+    difficulty: hard
+    added_in: "v2"
+    pair_for: SC07
+    shares_surface_features: [tech_support, keep_line_open, screen_share_mention, device_instructions]
+    distinguishing_behavior:
+      - "Звонок по заявке, которую клиент оставил сам"
+      - "Не просит устанавливать сторонние программы удалённого доступа"
+      - "Все действия клиент выполняет сам, коды не запрашиваются"
+    example_turns_ru:
+      - "Не кладите трубку, я проверю линию с нашей стороны."
+      - "Удалённо к вашему телефону я не подключаюсь, всё делаете вы сами."
+    label: benign
+
 # Целевое соотношение в корпусе
 corpus_balance:
   scam_share: 0.5
   benign_share: 0.5
-  hard_negative_share_within_benign: 0.6
+  # v2: диалог порождается «тема → класс → сценарий» (topics.yaml), поэтому
+  # доля трудных негативов определяется составом тем, а не отдельной квотой
+  sampling: topic_first
+  hard_negative_share_within_benign: 0.6   # используется только в режиме v1
   rationale: >
-    Половина негативов должна быть трудной (BN01, BN02, BN04, BN07),
-    иначе модель выучит тривиальную границу и посыплется на проде,
-    где большинство звонков — легитимные.
+    v1: половина негативов — трудные (BN01, BN02, BN04, BN07).
+    v2: у каждой темы есть и мошеннический, и легитимный сценарий, тема
+    выбирается независимо от класса — иначе модель учит тему, а не приём
+    манипуляции (см. topics.yaml и results/detector_eval_*).

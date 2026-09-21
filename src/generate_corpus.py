@@ -12,6 +12,16 @@
   * красные флаги размечаются детектором ПО ТЕКСТУ реплики, а не приписываются
     по ярлыку сценария.
 
+v2 (topics.yaml) — тема звонка не несёт информации о классе:
+  * диалог порождается «тема → класс → сценарий»: у каждой из 11 тем есть
+    мошеннический и легитимный сценарий, тема выбирается одинаково для обоих
+    классов;
+  * приветствие (S0) и подтверждение личности (S1) — из ОБЩЕГО пула темы
+    (объединение пулов обоих классов + нейтральные приветствия), ответы
+    абонента на S0/S1 — тоже общие;
+  * число реплик и вероятность ответа абонента на S0/S1 одинаковы для классов.
+Классы расходятся со стадии S2 — там, где начинается манипуляция.
+
 Выход: JSONL, одна строка — один диалог.
 """
 
@@ -30,16 +40,25 @@ import redflags
 ROOT = Path(__file__).resolve().parent.parent
 TAX = ROOT / "data" / "taxonomy"
 
+EARLY = ("S0", "S1")          # стадии с общими пулами темы
+P_S1 = 0.7                    # вероятность стадии S1 — одинакова для обоих классов
+P_VICTIM = 0.85               # вероятность ответа абонента — одинакова для обоих классов
+
 
 # ─────────────────────────────────────────────────────────────────────────
+def _yaml(name):
+    return yaml.safe_load(open(TAX / name, encoding="utf-8"))
+
+
 def load_taxonomy() -> Dict:
     return {
-        "stages": yaml.safe_load(open(TAX / "stages.yaml")),
-        "scam": yaml.safe_load(open(TAX / "scam_scenarios.yaml")),
-        "benign": yaml.safe_load(open(TAX / "benign_scenarios.yaml")),
-        "slots": yaml.safe_load(open(TAX / "slots.yaml")),
-        "pb_scam": yaml.safe_load(open(TAX / "phrasebank_scam.yaml")),
-        "pb_benign": yaml.safe_load(open(TAX / "phrasebank_benign.yaml")),
+        "stages": _yaml("stages.yaml"),
+        "scam": _yaml("scam_scenarios.yaml"),
+        "benign": _yaml("benign_scenarios.yaml"),
+        "slots": _yaml("slots.yaml"),
+        "pb_scam": _yaml("phrasebank_scam.yaml"),
+        "pb_benign": _yaml("phrasebank_benign.yaml"),
+        "topics": _yaml("topics.yaml"),
     }
 
 
@@ -52,6 +71,20 @@ def weighted_choice(rng: random.Random, items: List[Dict], key: str = "weight"):
         if r <= acc:
             return i
     return items[-1]
+
+
+def merge_pools(*pools) -> Dict[str, List[str]]:
+    """Объединить пулы {ru: [...], kk: [...]} без повторов, с сохранением порядка."""
+    out: Dict[str, List[str]] = {}
+    for pool in pools:
+        for lang, items in (pool or {}).items():
+            if not isinstance(items, list):
+                continue
+            dst = out.setdefault(lang, [])
+            for x in items:
+                if x not in dst:
+                    dst.append(x)
+    return out
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -116,6 +149,39 @@ class DialogueGenerator:
         self.benign_scenarios = {b["id"]: b for b in tax["benign"]["benign_scenarios"]}
         self.pb_scam = tax["pb_scam"]["scenarios"]
         self.pb_benign = tax["pb_benign"]["scenarios"]
+        self.topics = tax["topics"]["topics"]
+        self.topic_of = {sid: t for t, d in self.topics.items() for sid in d["scam"] + d["benign"]}
+        missing = (set(self.scam_scenarios) | set(self.benign_scenarios)) - set(self.topic_of)
+        if missing:
+            raise ValueError(f"сценарии без темы в topics.yaml: {sorted(missing)}")
+        self._cache: Dict = {}
+
+    # ── общие пулы темы для S0/S1 ────────────────────────────────────
+    def _pb(self, sid):
+        return self.pb_scam.get(sid, {}) if sid.startswith("SC") else self.pb_benign.get(sid, {})
+
+    def topic_caller_pool(self, topic: str, stage: str) -> Dict[str, List[str]]:
+        key = ("caller", topic, stage)
+        if key not in self._cache:
+            t = self.topics[topic]
+            pools = [self._pb(sid).get(stage, {}).get("caller") for sid in t["scam"] + t["benign"]]
+            if stage == "S0":
+                pools.append(t.get("shared_openings"))
+            self._cache[key] = merge_pools(*pools)
+        return self._cache[key]
+
+    def topic_victim_pool(self, topic: str, stage: str, profile: str) -> Dict[str, List[str]]:
+        key = ("victim", topic, stage, profile)
+        if key not in self._cache:
+            t = self.topics[topic]
+            vr = self.tax["pb_scam"]["victim_responses"].get(stage, {})
+            pools = [vr.get(profile) or vr.get("any")]
+            pools += [self._pb(sid).get(stage, {}).get("victim") for sid in t["benign"]]
+            self._cache[key] = merge_pools(*pools)
+        return self._cache[key]
+
+    def has_s1(self, topic: str) -> bool:
+        return bool(self.topic_caller_pool(topic, "S1"))
 
     # ── выбор языка реплики ──────────────────────────────────────────
     def pick_lang(self, profile_id: str) -> str:
@@ -153,15 +219,36 @@ class DialogueGenerator:
             used.add(choice)
         return choice
 
+    def _early_stage(self, turns, topic, stage, lang_profile, profile, ctx, intent):
+        """S0/S1: реплики звонящего и ответ абонента — из общих пулов темы.
+        Код одинаковый для обоих классов — в этом и смысл."""
+        used: set = set()
+        for _ in range(self.rng.choice([1, 1, 1, 2])):
+            lang = self.pick_lang(lang_profile)
+            raw = self.pick_utterance(self.topic_caller_pool(topic, stage), lang, used)
+            if raw:
+                turns.append(self._turn(len(turns), "caller", ctx.fill(raw), stage, lang, intent, raw))
+        if self.rng.random() < P_VICTIM:
+            lang = self.pick_lang(lang_profile)
+            raw = self.pick_utterance(self.topic_victim_pool(topic, stage, profile), lang)
+            if raw:
+                turns.append(self._turn(len(turns), "victim", ctx.fill(raw), stage, lang,
+                                        "ответ абонента", raw))
+
+    def _early_stages(self, topic: str) -> List[str]:
+        return ["S0"] + (["S1"] if self.has_s1(topic) and self.rng.random() < P_S1 else [])
+
     # ── мошеннический диалог ─────────────────────────────────────────
     def gen_scam(self, scenario_id: str) -> Dict:
         sc = self.scam_scenarios[scenario_id]
         pb = self.pb_scam[scenario_id]
+        topic = self.topic_of[scenario_id]
         profile = weighted_choice(self.rng, self.profiles)
         lang_profile = weighted_choice(self.rng, self.languages)
         ctx = SlotContext(self.rng, self.tax["slots"])
 
-        stages = [s for s in sc["stage_sequence"] if s in pb]
+        stages = self._early_stages(topic) + [s for s in sc["stage_sequence"]
+                                              if s not in EARLY and s in pb]
 
         # Сопротивление жертвы: часть диалогов обрывается до целевого действия.
         # Без этого длина диалога стала бы тривиальным признаком.
@@ -176,6 +263,10 @@ class DialogueGenerator:
         turns, action_turn_idx = [], -1
 
         for stage in stages:
+            if stage in EARLY:
+                self._early_stage(turns, topic, stage, lang_profile["id"], profile["id"], ctx,
+                                  self.stage_meta[stage]["name_ru"])
+                continue
             stage_pb = pb.get(stage, {})
             caller_pool = stage_pb.get("caller")
             n_caller = self.rng.choice([1, 1, 2] if stage in ("S2", "S3", "S5") else [1, 1, 1, 2])
@@ -193,7 +284,7 @@ class DialogueGenerator:
                                         stage_pb.get("intent", ""), raw))
 
             # ответ жертвы
-            if self.rng.random() < 0.85:
+            if self.rng.random() < P_VICTIM:
                 vr = self.tax["pb_scam"]["victim_responses"].get(stage, {})
                 pool = vr.get(profile["id"]) or vr.get("any")
                 lang = self.pick_lang(lang_profile["id"])
@@ -206,6 +297,7 @@ class DialogueGenerator:
             "label": "scam",
             "scenario_id": scenario_id,
             "scenario_code": sc["code"],
+            "topic": topic,
             "victim_profile": profile["id"],
             "language_profile": lang_profile["id"],
             "terminated_early_at": terminated_at,
@@ -218,13 +310,12 @@ class DialogueGenerator:
     def gen_benign(self, scenario_id: str) -> Dict:
         bn = self.benign_scenarios[scenario_id]
         pb = self.pb_benign[scenario_id]
+        topic = self.topic_of[scenario_id]
         profile = weighted_choice(self.rng, self.profiles)
         lang_profile = weighted_choice(self.rng, self.languages)
         ctx = SlotContext(self.rng, self.tax["slots"])
 
-        stages = [s for s in ("S0", "S1", "S2", "SB") if s in pb]
-        if "S1" in stages and self.rng.random() < 0.4:
-            stages.remove("S1")
+        stages = self._early_stages(topic) + [s for s in ("S2", "SB") if s in pb]
 
         # Подмешиваем ли в этот диалог легитимную реплику с красным флагом.
         # Без них модель выучит словарь вместо контекста.
@@ -235,6 +326,10 @@ class DialogueGenerator:
         turns = []
 
         for stage in stages:
+            if stage in EARLY:
+                self._early_stage(turns, topic, stage, lang_profile["id"], profile["id"], ctx,
+                                  self.stage_meta[stage]["name_ru"])
+                continue
             stage_pb = pb.get(stage, {})
             caller_pool = stage_pb.get("caller")
             fb_pool = stage_pb.get("caller_flag_bearing")
@@ -259,7 +354,7 @@ class DialogueGenerator:
                     turns.append(t)
                     injected = True
 
-            if self.rng.random() < 0.8:
+            if self.rng.random() < P_VICTIM:
                 lang = self.pick_lang(lang_profile["id"])
                 raw = self.pick_utterance(stage_pb.get("victim"), lang)
                 if raw:
@@ -270,6 +365,7 @@ class DialogueGenerator:
             "label": "benign",
             "scenario_id": scenario_id,
             "scenario_code": bn["code"],
+            "topic": topic,
             "difficulty": bn["difficulty"],
             "victim_profile": profile["id"],
             "language_profile": lang_profile["id"],
@@ -279,6 +375,20 @@ class DialogueGenerator:
             "target_action": [],
             "turns": turns,
         }
+
+    # ── выборка: тема → класс → сценарий ─────────────────────────────
+    def sample(self, n: int, rng: random.Random, scam_share: float = 0.5) -> List[Dict]:
+        """P(тема | класс) одинакова для обоих классов — тема не выдаёт класс."""
+        topics = sorted(self.topics)
+        n_scam = int(n * scam_share)
+        out = []
+        for i in range(n):
+            label = "scam" if i < n_scam else "benign"
+            topic = rng.choice(topics)
+            sid = rng.choice(self.topics[topic][label])
+            out.append(self.gen_scam(sid) if label == "scam" else self.gen_benign(sid))
+        rng.shuffle(out)
+        return out
 
     def _turn(self, idx: int, speaker: str, text: str, stage: str,
               lang: str, intent: str, template: Optional[str] = None) -> Dict:
@@ -309,26 +419,7 @@ def main():
     tax = load_taxonomy()
     gen = DialogueGenerator(tax, seed=args.seed)
     rng = random.Random(args.seed)
-
-    balance = tax["benign"]["corpus_balance"]
-    n_scam = int(args.n * balance["scam_share"])
-    n_benign = args.n - n_scam
-
-    scam_ids = list(gen.scam_scenarios)
-    benign_ids = list(gen.benign_scenarios)
-    hard_ids = [i for i in benign_ids
-                if gen.benign_scenarios[i]["difficulty"] in ("hard", "very_hard")]
-    easy_ids = [i for i in benign_ids if i not in hard_ids]
-    hard_share = balance["hard_negative_share_within_benign"]
-
-    dialogues = []
-    for _ in range(n_scam):
-        dialogues.append(gen.gen_scam(rng.choice(scam_ids)))
-    for _ in range(n_benign):
-        pool = hard_ids if rng.random() < hard_share else easy_ids
-        dialogues.append(gen.gen_benign(rng.choice(pool)))
-
-    rng.shuffle(dialogues)
+    dialogues = gen.sample(args.n, rng, tax["benign"]["corpus_balance"]["scam_share"])
 
     # разбиение по диалогам (не по репликам), чтобы не было утечки
     n = len(dialogues)

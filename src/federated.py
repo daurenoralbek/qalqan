@@ -18,9 +18,10 @@
   random     IID: случайно
   profile    по профилю клиента (victim_profile): пожилые+доверчивые / сомневающиеся /
              подозрительные — у разных банков разная клиентская база
-  scenario   по схемам мошенничества: каждый банк видел только часть схем
-             (легитимные звонки — случайно). Самый жёсткий случай: сможет ли
-             общая модель ловить схему, которой в «своём» банке не было?
+  topic      по темам звонков: каждый банк видел только часть тем (например,
+             только банковские и телеком-схемы) — у каждой темы оба класса.
+             Самый жёсткий случай: сможет ли общая модель ловить схему,
+             которой в «своём» банке не было?
 
 Все модели сохраняются в формате train_detector.py → оцениваются eval_detector.py
 (holdout — на Kaggle, реальные звонки — локально).
@@ -43,7 +44,10 @@ ROOT = Path(__file__).resolve().parent.parent
 TRAIN = ROOT / "data" / "generated" / "corpus_train.jsonl"
 
 PROFILE_BANK = {"elderly": 0, "compliant": 0, "hesitant": 1, "suspicious": 2}
-SCENARIO_BANK = {"SC01": 0, "SC02": 0, "SC03": 0, "SC04": 1, "SC05": 1, "SC06": 1, "SC07": 2, "SC08": 2}
+# v2: банки специализируются по темам звонков (у каждой темы оба класса)
+TOPIC_BANK = {"bank": 0, "credit": 0, "telecom": 0, "telecom_security": 0,
+              "pension": 1, "invest": 1, "tech_support": 1,
+              "relative": 2, "delivery": 2, "clinic": 2, "job": 2}
 
 
 def split_banks(dialogues, mode: str, k: int, seed: int):
@@ -56,8 +60,8 @@ def split_banks(dialogues, mode: str, k: int, seed: int):
             b = i % k
         elif mode == "profile":
             b = PROFILE_BANK[d["victim_profile"]]
-        elif mode == "scenario":
-            b = SCENARIO_BANK[d["scenario_id"]] if d["label"] == "scam" else rng.randrange(k)
+        elif mode == "topic":
+            b = TOPIC_BANK[d["topic"]]
         else:
             raise ValueError(mode)
         banks[b].append(d)
@@ -90,7 +94,7 @@ def fresh_model(args, device):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default=D.MODEL_NAME)
-    ap.add_argument("--split", default="profile", choices=["random", "profile", "scenario"])
+    ap.add_argument("--split", default="profile", choices=["random", "profile", "topic"])
     ap.add_argument("--banks", type=int, default=3)
     ap.add_argument("--rounds", type=int, default=3)
     ap.add_argument("--local-epochs", type=float, default=1.0)
@@ -125,10 +129,11 @@ def main():
     report = {"split": args.split, "device": device, "total_epochs": total_epochs,
               "banks": [{"dialogues": len(b), "scam": sum(d["label"] == "scam" for d in b),
                          "scenarios": sorted({d["scenario_id"] for d in b if d["label"] == "scam"}),
+                         "topics": sorted({d["topic"] for d in b}),
                          "profiles": sorted({d["victim_profile"] for d in b})} for b in banks],
               "methods": {}}
     for i, b in enumerate(report["banks"]):
-        print(f"банк {i}: {b['dialogues']} диалогов, scam {b['scam']}, схемы {b['scenarios']}, "
+        print(f"банк {i}: {b['dialogues']} диалогов, scam {b['scam']}, темы {b['topics']}, "
               f"профили {b['profiles']}")
 
     tag = f"fed-{args.split}-s{args.seed}"

@@ -126,7 +126,7 @@ def main():
     ap.add_argument("--epochs", type=float, default=3,
                     help="train: эпох; federated: раундов (по 1 локальной эпохе)")
     ap.add_argument("--seeds", type=int, nargs="+", default=[42])
-    ap.add_argument("--splits", nargs="+", default=["random", "profile", "scenario"])
+    ap.add_argument("--splits", nargs="+", default=["random", "profile", "topic"])
     ap.add_argument("--push", action="store_true")
     args = ap.parse_args()
 
