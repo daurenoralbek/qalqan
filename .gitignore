@@ -1,0 +1,27 @@
+# служебное Claude Code (worktree живёт здесь)
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+
+# веса моделей и чекпоинты — тяжёлые, в git не кладём
+models/
+checkpoints/
+*.safetensors
+*.bin
+*.gguf
+
+# сырые внешние данные: аудио и первичные выгрузки (лицензии разные,
+# часть нельзя распространять) — в git только обработанные транскрипты и манифест
+data/external/raw/
+*.wav
+*.mp3
+*.m4a
+*.webm
+
+# секреты
+.env
+kaggle.json

@@ -1,0 +1,296 @@
+# Қалқан — таксономия казахстанских сценариев телефонного мошенничества
+#
+# Все сценарии подтверждены открытыми источниками РК (не выдуманы):
+#   [GP]    Генпрокуратура РК / прокуратура Астаны — распространённые схемы
+#   [NBK]   Национальный Банк РК — предупреждение о «безопасных счетах» (май 2026)
+#   [MVD]   МВД РК, департамент по киберпреступности — ИИ-дипфейки, клонирование голоса
+#   [ENPF]  ЕНПФ — предупреждение о звонках про «перерасчёт пенсий» (май 2026)
+#   [POL]   Полиция области Абай — SMS-бомбинг + «Антиспам» (август 2026)
+#   [PROC]  Прокуратура — кейс с «оператором связи», ущерб 20 млн тг (апрель 2026)
+#   [FIN]   finance.kz — сводка 15 признаков мошеннического звонка
+#
+# Распределение по данным Антифрод-центра Нацбанка РК (на 01.01.2026):
+#   телефонное мошенничество — 22% инцидентов
+#   фейковые инвестиции      — 19% инцидентов
+#   всего инцидентов          — 80 871
+
+schema_version: "1.0"
+
+scenarios:
+
+  # ─────────────────────────────────────────────────────────────────────
+  - id: SC01
+    code: bank_security_safe_account
+    name_ru: "Служба безопасности банка → безопасный счёт"
+    name_kk: "Банк қауіпсіздік қызметі → қауіпсіз шот"
+    prevalence: high
+    share_note: "Доминирующая схема в структуре телефонного мошенничества (22%)"
+    sources: [GP, NBK, FIN]
+    actors:
+      - role: fake_bank_officer
+        label_ru: "сотрудник службы безопасности банка"
+      - role: fake_law_enforcement
+        label_ru: "следователь / сотрудник правоохранительных органов"
+        enters_at: S4
+    stage_sequence: [S0, S1, S2, S3, S4, S5, S6]
+    pretexts:
+      - "зафиксирована попытка оформления кредита на ваше имя"
+      - "по вашей карте проходит несанкционированная операция"
+      - "из вашего личного кабинета пытаются вывести средства"
+    key_phrases_ru:
+      - "на ваше имя пытаются оформить кредит"
+      - "чтобы аннулировать заявку, нужно действовать прямо сейчас"
+      - "переведите средства на безопасный счёт"
+      - "не кладите трубку, линия должна оставаться открытой"
+      - "идёт следствие, никому не сообщайте"
+      - "назовите код из SMS для подтверждения личности"
+    key_phrases_kk:
+      - "сіздің атыңызға несие ресімдеуге әрекет жасалып жатыр"
+      - "қаражатты қауіпсіз шотқа аударыңыз"
+      - "телефонды қоймаңыз"
+      - "SMS-тен келген кодты айтыңыз"
+    target_action: [disclose_sms_code, transfer_to_safe_account, take_out_loan_and_transfer]
+    red_flags: [sms_code_request, safe_account, keep_line_open, secrecy_demand, time_pressure, actor_handoff]
+
+  # ─────────────────────────────────────────────────────────────────────
+  - id: SC02
+    code: telecom_egov_code_harvest
+    name_ru: "Оператор связи / eGov / поликлиника — сбор SMS-кода"
+    name_kk: "Байланыс операторы / eGov — SMS-кодын жинау"
+    prevalence: high
+    sources: [NBK, GP]
+    note: >
+      Часто выступает ПЕРВЫМ звеном цепочки: код даёт доступ к аккаунту,
+      после чего разворачивается SC01. Детектор должен ловить уже здесь.
+    actors:
+      - role: fake_telecom_operator
+        label_ru: "сотрудник оператора связи"
+    stage_sequence: [S0, S1, S2, S5]
+    pretexts:
+      - "истекает срок действия договора на SIM-карту, нужно продлить"
+      - "подтвердите запись на приём к врачу"
+      - "требуется переоформление услуг на портале eGov"
+    key_phrases_ru:
+      - "для продления договора продиктуйте код из сообщения"
+      - "иначе номер будет отключён в течение суток"
+      - "это стандартная процедура подтверждения"
+    key_phrases_kk:
+      - "шартты ұзарту үшін хабарламадағы кодты айтыңыз"
+      - "әйтпесе нөмір өшіріледі"
+    target_action: [disclose_sms_code]
+    red_flags: [sms_code_request, time_pressure, service_disconnection_threat]
+
+  # ─────────────────────────────────────────────────────────────────────
+  - id: SC03
+    code: sms_bombing_antispam
+    name_ru: "SMS-бомбинг + предложение включить «Антиспам»"
+    name_kk: "SMS-бомбинг + «Антиспам» қосу ұсынысы"
+    prevalence: emerging
+    first_reported: "2026-08"
+    sources: [POL]
+    note: "Свежая схема (август 2026) — ценна как тест на обобщение модели"
+    actors:
+      - role: fake_telecom_operator
+        label_ru: "специалист технической поддержки оператора"
+    stage_sequence: [S0, S1, S2, S3, S5]
+    precondition: "жертва получает шквал SMS: регистрации, реклама, коды входа"
+    pretexts:
+      - "фиксируем массовую SMS-атаку на ваш аккаунт"
+      - "рекомендуем активировать защиту «Антиспам»"
+    key_phrases_ru:
+      - "на ваш номер идёт массовая атака"
+      - "чтобы подключить защиту, назовите последний пришедший код"
+      - "атака продолжается, нужно успеть сейчас"
+    key_phrases_kk:
+      - "сіздің нөміріңізге шабуыл жасалып жатыр"
+      - "қорғанысты қосу үшін кодты айтыңыз"
+    target_action: [disclose_sms_code]
+    red_flags: [sms_code_request, manufactured_urgency, exploits_real_signal]
+
+  # ─────────────────────────────────────────────────────────────────────
+  - id: SC04
+    code: enpf_pension_recalculation
+    name_ru: "ЕНПФ — перерасчёт пенсии / неучтённый стаж"
+    name_kk: "БЖЗҚ — зейнетақыны қайта есептеу"
+    prevalence: medium
+    first_reported: "2026-05"
+    sources: [ENPF]
+    note: "Целевая группа — пожилые вкладчики. Казахстан-специфичная схема."
+    actors:
+      - role: fake_pension_fund_officer
+        label_ru: "специалист ЕНПФ"
+    stage_sequence: [S0, S1, S2, S5]
+    pretexts:
+      - "обнаружены годы стажа, не вошедшие в расчёт пенсии"
+      - "вам положен перерасчёт, нужно забронировать электронную очередь"
+    credibility_tricks:
+      - "называют реальный адрес отделения ЕНПФ"
+      - "называют ФИО и ИИН, взятые из открытых источников"
+    key_phrases_ru:
+      - "мы нашли неучтённый стаж, вам положена доплата"
+      - "забронируем электронную очередь, продиктуйте код подтверждения"
+    key_phrases_kk:
+      - "есепке алынбаған еңбек өтіліңіз табылды"
+      - "кезекке жазылу үшін растау кодын айтыңыз"
+    target_action: [disclose_sms_code]
+    red_flags: [sms_code_request, benefit_lure, targets_elderly]
+    ground_truth_note: "ЕНПФ официально не звонит и не запрашивает SMS-коды по телефону"
+
+  # ─────────────────────────────────────────────────────────────────────
+  - id: SC05
+    code: fake_investment
+    name_ru: "Фейковые инвестиции с гарантированной доходностью"
+    name_kk: "Кепілдендірілген кірісі бар жалған инвестициялар"
+    prevalence: high
+    share_note: "19% инцидентов Антифрод-центра"
+    sources: [FIN, GP]
+    actors:
+      - role: fake_investment_advisor
+        label_ru: "персональный инвестиционный консультант"
+    stage_sequence: [S0, S1, S2, S3, S5, S6]
+    pretexts:
+      - "закрытая площадка с доходностью 30% в месяц"
+      - "инвестиции в криптовалюту / акции / золото без риска"
+      - "места ограничены, набор закрывается сегодня"
+    key_phrases_ru:
+      - "доход гарантирован, риска нет"
+      - "начните с минимального депозита, дальше только растёт"
+      - "установите наше приложение для доступа к торговому кабинету"
+      - "для вывода прибыли нужно внести комиссию"
+    key_phrases_kk:
+      - "кіріс кепілдендірілген, тәуекел жоқ"
+      - "пайданы шығару үшін комиссия төлеу керек"
+    target_action: [transfer_funds, install_app, repeat_payments]
+    red_flags: [guaranteed_returns, scarcity_pressure, exit_fee_trap]
+
+  # ─────────────────────────────────────────────────────────────────────
+  - id: SC06
+    code: loan_phishing_link
+    name_ru: "SMS об одобренном кредите + фишинговая ссылка"
+    name_kk: "Мақұлданған несие туралы SMS + фишингтік сілтеме"
+    prevalence: high
+    sources: [GP]
+    channel: [sms, messenger, call_followup]
+    actors:
+      - role: fake_bank_bot
+        label_ru: "автоматическое уведомление банка"
+    stage_sequence: [S0, S2, S5]
+    pretexts:
+      - "ваша заявка на кредит одобрена, подтвердите получение"
+      - "изменён статус вашей кредитной заявки"
+    key_phrases_ru:
+      - "перейдите по ссылке для подтверждения"
+      - "введите номер удостоверения личности и данные карты"
+      - "введите код подтверждения"
+    key_phrases_kk:
+      - "растау үшін сілтемеге өтіңіз"
+      - "жеке куәлік деректерін енгізіңіз"
+    target_action: [visit_phishing_site, enter_card_data, enter_iin, disclose_sms_code]
+    red_flags: [unsolicited_link, credential_harvesting, unrequested_loan]
+
+  # ─────────────────────────────────────────────────────────────────────
+  - id: SC07
+    code: remote_access_takeover
+    name_ru: "Удалённый доступ: AnyDesk / TeamViewer / демонстрация экрана"
+    name_kk: "Қашықтан қол жеткізу: AnyDesk / экранды көрсету"
+    prevalence: high
+    severity: critical
+    sources: [FIN, PROC]
+    documented_case: "Апрель 2026 — ущерб 20 млн тг с депозитного счёта [PROC]"
+    actors:
+      - role: fake_tech_support
+        label_ru: "технический специалист оператора / банка"
+    stage_sequence: [S0, S1, S2, S5, S6]
+    pretexts:
+      - "действует скидка 30% на подключение телеканалов"
+      - "нужно устранить сбой в приложении банка"
+      - "проверим настройки вашего устройства"
+    key_phrases_ru:
+      - "установите приложение для удалённой поддержки"
+      - "включите демонстрацию экрана, я подскажу куда нажимать"
+      - "продиктуйте цифры, которые появились на экране"
+    key_phrases_kk:
+      - "қашықтан қолдау қосымшасын орнатыңыз"
+      - "экранды көрсетуді қосыңыз"
+    target_action: [install_remote_access_tool, screen_share, device_takeover]
+    red_flags: [remote_access_request, screen_share_request, device_lockout]
+
+  # ─────────────────────────────────────────────────────────────────────
+  - id: SC08
+    code: ai_voice_clone_relative
+    name_ru: "ИИ-клонирование голоса родственника или руководителя"
+    name_kk: "ЖИ арқылы туыстың дауысын көшіру"
+    prevalence: emerging
+    severity: critical
+    first_reported: "2026"
+    sources: [MVD]
+    note: >
+      МВД РК: мошенники используют ИИ для имитации голоса родственников,
+      знакомых или руководителей, а также дипфейк-видеозвонки с поддельными
+      удостоверениями. Для аудио-модальности это ключевой сценарий:
+      текстовые маркеры слабые, нужен акустический сигнал.
+    actors:
+      - role: cloned_relative
+        label_ru: "«родственник» синтезированным голосом"
+      - role: cloned_executive
+        label_ru: "«руководитель» синтезированным голосом"
+    stage_sequence: [S0, S2, S3, S5]
+    pretexts:
+      - "я попал в беду, срочно нужны деньги"
+      - "произошло ДТП, нужно решить вопрос сейчас"
+      - "это руководитель, срочно переведи по реквизитам"
+    key_phrases_ru:
+      - "только не говори маме"
+      - "перезвонить не могу, телефон сейчас отключится"
+      - "переведи прямо сейчас, потом всё объясню"
+    key_phrases_kk:
+      - "анама айтпа"
+      - "қазір аудар, кейін түсіндіремін"
+    target_action: [transfer_funds]
+    red_flags: [secrecy_demand, no_callback_possible, emotional_urgency, voice_anomaly]
+    detection_note: >
+      Текстовые признаки пересекаются с настоящей просьбой родственника —
+      это самый трудный класс. Требует акустических признаков
+      (артефакты синтеза) либо проверки «перезвоните сами».
+
+# ─────────────────────────────────────────────────────────────────────
+# Сводка целевых действий — то, что система должна успеть предотвратить
+target_actions:
+  disclose_sms_code:        {severity: critical, stage: S5}
+  transfer_to_safe_account: {severity: critical, stage: S5}
+  take_out_loan_and_transfer: {severity: critical, stage: S5}
+  install_remote_access_tool: {severity: critical, stage: S5}
+  screen_share:             {severity: critical, stage: S5}
+  device_takeover:          {severity: critical, stage: S6}
+  enter_card_data:          {severity: critical, stage: S5}
+  transfer_funds:           {severity: high,     stage: S5}
+  visit_phishing_site:      {severity: high,     stage: S5}
+  install_app:              {severity: medium,   stage: S5}
+  enter_iin:                {severity: medium,   stage: S5}
+  repeat_payments:          {severity: high,     stage: S6}
+
+# Красные флаги — интерпретируемые признаки для объяснения решения модели
+red_flag_catalog:
+  sms_code_request:      {weight: 0.95, explain_ru: "Просят назвать код из SMS"}
+  safe_account:          {weight: 0.95, explain_ru: "Предлагают «безопасный счёт»"}
+  remote_access_request: {weight: 0.93, explain_ru: "Просят установить программу удалённого доступа"}
+  screen_share_request:  {weight: 0.90, explain_ru: "Просят включить демонстрацию экрана"}
+  keep_line_open:        {weight: 0.88, explain_ru: "Требуют не класть трубку"}
+  secrecy_demand:        {weight: 0.85, explain_ru: "Требуют никому не рассказывать"}
+  actor_handoff:         {weight: 0.80, explain_ru: "Передают «сотруднику органов»"}
+  guaranteed_returns:    {weight: 0.85, explain_ru: "Обещают доход без риска"}
+  unrequested_loan:      {weight: 0.75, explain_ru: "Речь о кредите, который вы не оформляли"}
+  time_pressure:         {weight: 0.70, explain_ru: "Искусственный дефицит времени"}
+  credential_harvesting: {weight: 0.85, explain_ru: "Запрашивают данные карты или удостоверения"}
+  unsolicited_link:      {weight: 0.70, explain_ru: "Присылают ссылку без вашего запроса"}
+  no_callback_possible:  {weight: 0.75, explain_ru: "Нельзя перезвонить самому"}
+  emotional_urgency:     {weight: 0.65, explain_ru: "Давят на эмоции и срочность"}
+  exit_fee_trap:         {weight: 0.80, explain_ru: "Для вывода прибыли требуют доплату"}
+  scarcity_pressure:     {weight: 0.60, explain_ru: "«Мест мало, решайте сейчас»"}
+  service_disconnection_threat: {weight: 0.65, explain_ru: "Угрожают отключить услугу"}
+  manufactured_urgency:  {weight: 0.70, explain_ru: "Срочность создана самими звонящими"}
+  exploits_real_signal:  {weight: 0.60, explain_ru: "Эксплуатируют реальное событие (шквал SMS)"}
+  device_lockout:        {weight: 0.90, explain_ru: "Устройство блокируется после действий"}
+  benefit_lure:          {weight: 0.55, explain_ru: "Обещают выплату или льготу"}
+  targets_elderly:       {weight: 0.40, explain_ru: "Схема нацелена на пожилых"}
+  voice_anomaly:         {weight: 0.70, explain_ru: "Акустические признаки синтеза голоса"}
