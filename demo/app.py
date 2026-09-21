@@ -20,6 +20,7 @@ import torch
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))   # в Space detector.py лежит рядом
 import detector as D  # noqa: E402
 import redflags  # noqa: E402
 
