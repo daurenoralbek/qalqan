@@ -5,16 +5,21 @@
 Зачем. Публичных записей мошеннических звонков на казахском нет —
 это зафиксировано в data/external/README.md. Единственный честный способ
 проверить детектор на казахском в структуре РЕАЛЬНОГО разговора —
-перевести реальные звонки. KazLLM — казахстанская модель (ISSAI, NU),
-её казахский заметно естественнее, чем у NLLB; для сравнения тот же
-поднабор переводится и NLLB (translate_external.py --tgt kk).
+перевести реальные звонки. KazLLM — казахстанская модель (ISSAI, NU).
 
 Корейского в KazLLM нет (kk/ru/en/tr), поэтому KorCCVi переводим через
 русский: ko →(NLLB)→ ru →(KazLLM)→ kk. Английские звонки — напрямую en → kk.
 
-Данные локальные, в облако не уходят (условия KorCCVi).
+Инструкция модели — на казахском: с русской инструкцией KazLLM отвечает
+по-русски (первая проба так и «перевела» — переписала русский текст).
+Каждая строка проверяется на казахские буквы; не прошедшие проверку
+переспрашиваются по одной, итог помечается в kk_ok.
 
-    python translate_kazllm.py --per-class 40
+Данные локальные, в облако не уходят (условия KorCCVi).
+Скорость на CPU ~2–4 мин на диалог, поэтому берём начало разговора
+(--max-turns) и поднабор (--per-class).
+
+    python translate_kazllm.py --per-class 25 --max-turns 20
 """
 
 import argparse
@@ -35,13 +40,28 @@ PORT = 8088
 TURNS_PER_REQUEST = 8
 
 SYSTEM = (
-    "Ты профессиональный переводчик на казахский язык. Тебе дают реплики "
-    "телефонного разговора. Переводи разговорную речь естественно, как говорят "
-    "в Казахстане. Сохраняй смысл, ничего не добавляй и не убирай, не отвечай "
-    "на содержание и не комментируй. Выводи только перевод."
+    "Сен кәсіби аудармашысың. Саған телефон әңгімесінің репликалары беріледі. "
+    "Әр репликаны қазақ тіліне аудар. Ауызекі сөйлеуді табиғи, Қазақстанда "
+    "сөйлейтіндей аудар. Мағынасын сақта, ештеңе қоспа және алып тастама, "
+    "мазмұнына жауап берме, түсініктеме жазба. Тек қазақша аударманы шығар."
 )
+SRC_NAME = {"ru": "орыс", "en": "ағылшын"}
 
-SRC_NAME = {"ru": "русского", "en": "английского"}
+# Образец формата и языка ответа (нейтральная фраза, не из тестовых данных)
+FEWSHOT_SRC = {
+    "ru": ["Добрый день, чем могу помочь?", "Я хотел бы узнать баланс карты."],
+    "en": ["Good afternoon, how can I help you?", "I would like to check my card balance."],
+}
+FEWSHOT_KK = ["Қайырлы күн, қалай көмектесе аламын?", "Мен картамның балансын білгім келеді."]
+
+KK_LETTERS = set("әғқңөұүһіӘҒҚҢӨҰҮҺІ")
+
+
+def looks_kazakh(text: str) -> bool:
+    """Казахский текст почти всегда содержит специфические буквы; русский — нет."""
+    if len(text.split()) <= 2:       # «Иә», «Жоқ», «OK» — не проверяем
+        return True
+    return any(ch in KK_LETTERS for ch in text)
 
 
 def start_server(threads: int):
@@ -71,39 +91,56 @@ def chat(messages, max_tokens: int) -> str:
         return json.load(r)["choices"][0]["message"]["content"]
 
 
-def translate_block(lines, src_lang):
-    numbered = "\n".join(f"{i + 1}) {t}" for i, t in enumerate(lines))
-    user = (f"Переведи каждую строку с {SRC_NAME[src_lang]} на казахский. "
-            f"Сохрани нумерацию: ровно {len(lines)} строк в формате «N) перевод».\n\n{numbered}")
-    max_tokens = 64 + 4 * sum(len(t.split()) for t in lines) * 2
-    out = chat([{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}],
-               max_tokens)
+def numbered(lines):
+    return "\n".join(f"{i + 1}) {t}" for i, t in enumerate(lines))
+
+
+def user_prompt(lines, src_lang):
+    return (f"Төмендегі әр жолды {SRC_NAME[src_lang]} тілінен қазақ тіліне аудар. "
+            f"Нөмірлеуді сақта: дәл {len(lines)} жол, «N) аударма» форматында.\n\n"
+            f"{numbered(lines)}")
+
+
+def ask(lines, src_lang):
+    messages = [
+        {"role": "system", "content": SYSTEM},
+        {"role": "user", "content": user_prompt(FEWSHOT_SRC[src_lang], src_lang)},
+        {"role": "assistant", "content": numbered(FEWSHOT_KK)},
+        {"role": "user", "content": user_prompt(lines, src_lang)},
+    ]
+    out = chat(messages, 64 + 6 * sum(len(t.split()) for t in lines))
     got = {}
     for line in out.splitlines():
         m = re.match(r"\s*(\d+)\)\s*(.*)", line)
         if m:
             got[int(m.group(1))] = m.group(2).strip()
-    if len(got) == len(lines) and all(got.get(i + 1) for i in range(len(lines))):
-        return [got[i + 1] for i in range(len(lines))]
-    # нумерация поехала — переводим по одной строке
-    res = []
-    for t in lines:
-        o = chat([{"role": "system", "content": SYSTEM},
-                  {"role": "user", "content": f"Переведи с {SRC_NAME[src_lang]} на казахский:\n{t}"}],
-                 64 + 8 * len(t.split()))
-        res.append(o.strip().splitlines()[0] if o.strip() else "")
-    return res
+    return [got.get(i + 1, "") for i in range(len(lines))]
+
+
+def translate_block(lines, src_lang):
+    """Блоком (быстрее, контекст разговора сохраняется); строки, где нумерация
+    поехала или ответ не по-казахски, — повторно по одной."""
+    res = ask(lines, src_lang)
+    ok = []
+    for i, (src, kk) in enumerate(zip(lines, res)):
+        if not kk or not looks_kazakh(kk):
+            kk = ask([src], src_lang)[0]
+        ok.append(bool(kk) and looks_kazakh(kk))
+        res[i] = kk
+    return res, ok
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--per-class", type=int, default=40)
+    ap.add_argument("--per-class", type=int, default=25)
+    ap.add_argument("--max-turns", type=int, default=20,
+                    help="переводим начало разговора — ранняя детекция про него")
     ap.add_argument("--threads", type=int, default=10)
     ap.add_argument("--seed", type=int, default=7)
     args = ap.parse_args()
 
     # (файл-источник, язык источника): KorCCVi — уже русский перевод, EN — оригинал
-    plan = [("korccvi_ru.jsonl", "ru", "korccvi"), ("en_bank_orig.jsonl", "en", "en_bank")]
+    plan = [("korccvi_ru.jsonl", "ru"), ("en_bank_orig.jsonl", "en")]
     out_path = WORK / "kazllm_kk.jsonl"
     done = set()
     if out_path.exists():
@@ -111,7 +148,7 @@ def main():
 
     rng = random.Random(args.seed)
     todo = []
-    for fname, src_lang, _ in plan:
+    for fname, src_lang in plan:
         D = [json.loads(l) for l in open(WORK / fname, encoding="utf-8")]
         for lab in ("scam", "benign"):
             X = [d for d in D if d["label"] == lab]
@@ -126,22 +163,29 @@ def main():
     try:
         t0 = time.time()
         for k, (d, src_lang) in enumerate(todo):
+            d["turns"] = d["turns"][:args.max_turns]
             texts = [t["text"] for t in d["turns"]]
-            kk = []
+            kk, ok = [], []
             for i in range(0, len(texts), TURNS_PER_REQUEST):
-                kk += translate_block(texts[i:i + TURNS_PER_REQUEST], src_lang)
-            for t, k_text in zip(d["turns"], kk):
+                r, o = translate_block(texts[i:i + TURNS_PER_REQUEST], src_lang)
+                kk += r
+                ok += o
+            for t, k_text, k_ok in zip(d["turns"], kk, ok):
                 t.setdefault("text_orig", t["text"])
                 t["text_pivot"] = t["text"] if src_lang == "ru" else None
                 t["text"] = k_text
+                t["kk_ok"] = k_ok
+            d["kk_ok_share"] = round(sum(ok) / len(ok), 3) if ok else None
             d["lang"] = "kk"
-            d["translation"] = (f"KazLLM-1.0-8B Q4_K_M ({'ko→ru NLLB → ' if src_lang == 'ru' else ''}"
-                                f"{src_lang}→kk)")
+            pivot = "ko→ru NLLB → " if src_lang == "ru" else ""
+            d["translation"] = (f"KazLLM-1.0-8B Q4_K_M ({pivot}{src_lang}→kk), "
+                                f"первые {args.max_turns} реплик")
             with open(out_path, "a", encoding="utf-8") as f:
                 f.write(json.dumps(d, ensure_ascii=False) + "\n")
             el = time.time() - t0
-            print(f"  {k + 1}/{len(todo)} {d['dialogue_id']} — {el / (k + 1):.0f} с/диалог, "
-                  f"осталось ~{el / (k + 1) * (len(todo) - k - 1) / 60:.0f} мин", flush=True)
+            left = el / (k + 1) * (len(todo) - k - 1) / 60
+            print(f"  {k + 1}/{len(todo)} {d['dialogue_id']} kk_ok {d['kk_ok_share']} — "
+                  f"{el / (k + 1):.0f} с/диалог, осталось ~{left:.0f} мин", flush=True)
     finally:
         proc.terminate()
 
