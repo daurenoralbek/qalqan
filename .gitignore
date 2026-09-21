@@ -32,3 +32,4 @@ tools/
 
 # пакет для Kaggle собирается скриптом
 kaggle/build/
+kaggle/output/
