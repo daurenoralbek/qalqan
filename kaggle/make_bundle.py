@@ -19,6 +19,7 @@ import argparse
 import json
 import shutil
 import subprocess
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -116,12 +117,20 @@ def main():
     print(f"собрано → {BUILD}  (пользователь Kaggle: {user})")
 
     if args.push:
+        # CLI Kaggle на Windows строит имя временного файла из пути -p и падает
+        # на путях со слэшами — поэтому запускаем из самой папки с «-p .»
         exists = subprocess.run(["kaggle", "datasets", "status", f"{user}/qalqan-corpus"],
                                 capture_output=True, text=True).returncode == 0
-        cmd = (["kaggle", "datasets", "version", "-p", str(ds), "-m", "update"] if exists
-               else ["kaggle", "datasets", "create", "-p", str(ds)])
-        subprocess.run(cmd, check=True)
-        subprocess.run(["kaggle", "kernels", "push", "-p", str(kn)], check=True)
+        cmd = (["kaggle", "datasets", "version", "-p", ".", "-m", "update"] if exists
+               else ["kaggle", "datasets", "create", "-p", "."])
+        subprocess.run(cmd, check=True, cwd=ds)
+        for _ in range(40):                       # ждём, пока Kaggle обработает датасет
+            st = subprocess.run(["kaggle", "datasets", "status", f"{user}/qalqan-corpus"],
+                                capture_output=True, text=True).stdout
+            if "ready" in st:
+                break
+            time.sleep(15)
+        subprocess.run(["kaggle", "kernels", "push", "-p", "."], check=True, cwd=kn)
         print(f"ноутбук запущен: https://www.kaggle.com/code/{user}/qalqan-train")
 
 
