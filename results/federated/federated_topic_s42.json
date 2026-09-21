@@ -1,0 +1,219 @@
+{
+  "split": "topic",
+  "device": "cuda",
+  "total_epochs": 3.0,
+  "banks": [
+    {
+      "dialogues": 1264,
+      "scam": 636,
+      "scenarios": [
+        "SC01",
+        "SC02",
+        "SC03",
+        "SC06"
+      ],
+      "topics": [
+        "bank",
+        "credit",
+        "telecom",
+        "telecom_security"
+      ],
+      "profiles": [
+        "compliant",
+        "elderly",
+        "hesitant",
+        "suspicious"
+      ]
+    },
+    {
+      "dialogues": 905,
+      "scam": 442,
+      "scenarios": [
+        "SC04",
+        "SC05",
+        "SC07"
+      ],
+      "topics": [
+        "invest",
+        "pension",
+        "tech_support"
+      ],
+      "profiles": [
+        "compliant",
+        "elderly",
+        "hesitant",
+        "suspicious"
+      ]
+    },
+    {
+      "dialogues": 1231,
+      "scam": 622,
+      "scenarios": [
+        "SC08",
+        "SC09",
+        "SC10",
+        "SC11"
+      ],
+      "topics": [
+        "clinic",
+        "delivery",
+        "job",
+        "relative"
+      ],
+      "profiles": [
+        "compliant",
+        "elderly",
+        "hesitant",
+        "suspicious"
+      ]
+    }
+  ],
+  "methods": {
+    "central": {
+      "val_auc": 0.8581,
+      "val": {
+        "threshold": 0.7413,
+        "precision": 0.9348,
+        "recall": 0.7167,
+        "f1": 0.8113,
+        "fpr": 0.05,
+        "tp": 215,
+        "fp": 15,
+        "tn": 285,
+        "fn": 85,
+        "median_alert_turn": 4,
+        "median_lead_turns": 3,
+        "share_alerted_before_action": 0.9816
+      }
+    },
+    "local_0": {
+      "val_auc": 0.786,
+      "val": {
+        "threshold": 1.0,
+        "precision": 0.8544,
+        "recall": 0.2933,
+        "f1": 0.4367,
+        "fpr": 0.05,
+        "tp": 88,
+        "fp": 15,
+        "tn": 285,
+        "fn": 212,
+        "median_alert_turn": 4.0,
+        "median_lead_turns": 2,
+        "share_alerted_before_action": 0.7534
+      }
+    },
+    "local_1": {
+      "val_auc": 0.5564,
+      "val": {
+        "threshold": 0.9394,
+        "precision": 0.7973,
+        "recall": 0.1967,
+        "f1": 0.3155,
+        "fpr": 0.05,
+        "tp": 59,
+        "fp": 15,
+        "tn": 285,
+        "fn": 241,
+        "median_alert_turn": 9,
+        "median_lead_turns": -1,
+        "share_alerted_before_action": 0.2364
+      }
+    },
+    "local_2": {
+      "val_auc": 0.7458,
+      "val": {
+        "threshold": 1.0,
+        "precision": 0.8679,
+        "recall": 0.3067,
+        "f1": 0.4532,
+        "fpr": 0.0467,
+        "tp": 92,
+        "fp": 14,
+        "tn": 286,
+        "fn": 208,
+        "median_alert_turn": 4.5,
+        "median_lead_turns": 2,
+        "share_alerted_before_action": 0.6901
+      }
+    },
+    "fedavg": {
+      "val_auc": 0.8393,
+      "val": {
+        "threshold": 0.9991,
+        "precision": 0.9296,
+        "recall": 0.66,
+        "f1": 0.7719,
+        "fpr": 0.05,
+        "tp": 198,
+        "fp": 15,
+        "tn": 285,
+        "fn": 102,
+        "median_alert_turn": 4.0,
+        "median_lead_turns": 3.0,
+        "share_alerted_before_action": 0.9797
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "val_auc": 0.7499,
+          "val": {
+            "threshold": 0.8481,
+            "precision": 0.898,
+            "recall": 0.44,
+            "f1": 0.5906,
+            "fpr": 0.05,
+            "tp": 132,
+            "fp": 15,
+            "tn": 285,
+            "fn": 168,
+            "median_alert_turn": 5.0,
+            "median_lead_turns": 2.0,
+            "share_alerted_before_action": 0.7404
+          }
+        },
+        {
+          "round": 2,
+          "val_auc": 0.8092,
+          "val": {
+            "threshold": 0.9995,
+            "precision": 0.9123,
+            "recall": 0.52,
+            "f1": 0.6624,
+            "fpr": 0.05,
+            "tp": 156,
+            "fp": 15,
+            "tn": 285,
+            "fn": 144,
+            "median_alert_turn": 4.0,
+            "median_lead_turns": 3.0,
+            "share_alerted_before_action": 0.8362
+          }
+        },
+        {
+          "round": 3,
+          "val_auc": 0.8393,
+          "val": {
+            "threshold": 0.9991,
+            "precision": 0.9296,
+            "recall": 0.66,
+            "f1": 0.7719,
+            "fpr": 0.05,
+            "tp": 198,
+            "fp": 15,
+            "tn": 285,
+            "fn": 102,
+            "median_alert_turn": 4.0,
+            "median_lead_turns": 3.0,
+            "share_alerted_before_action": 0.9797
+          }
+        }
+      ],
+      "communication": {
+        "trainable_params": 1476866,
+        "mb_per_update": 5.91,
+        "total_mb_all_banks": 106.3
+      }
+    }
+  }
+}
