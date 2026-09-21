@@ -1,0 +1,164 @@
+{
+  "holdout": {
+    "n": 1000,
+    "auc_model": [
+      0.6716,
+      0.6737,
+      0.6775
+    ],
+    "auc_rules": 0.724,
+    "recall_model": [
+      0.586,
+      0.616,
+      0.654
+    ],
+    "recall_rules": 0.59,
+    "fpr_model": [
+      0.32,
+      0.38,
+      0.382
+    ],
+    "fpr_rules": 0.232,
+    "early_model": [
+      0.9404,
+      0.8918,
+      0.9342
+    ],
+    "early_rules": 0.5833
+  },
+  "korccvi_ru": {
+    "n": 400,
+    "auc_model": [
+      0.7724,
+      0.766,
+      0.7135
+    ],
+    "auc_rules": 0.505,
+    "recall_model": [
+      0.89,
+      0.87,
+      0.84
+    ],
+    "recall_rules": 0.01,
+    "fpr_model": [
+      0.68,
+      0.6,
+      0.59
+    ],
+    "fpr_rules": 0.0,
+    "early_model": [
+      null,
+      null,
+      null
+    ],
+    "early_rules": null
+  },
+  "en_bank_ru": {
+    "n": 422,
+    "auc_model": [
+      0.7892,
+      0.7239,
+      0.6871
+    ],
+    "auc_rules": 0.5047,
+    "recall_model": [
+      0.8673,
+      0.8531,
+      0.763
+    ],
+    "recall_rules": 0.0095,
+    "fpr_model": [
+      0.4929,
+      0.6825,
+      0.5545
+    ],
+    "fpr_rules": 0.0,
+    "early_model": [
+      null,
+      null,
+      null
+    ],
+    "early_rules": null
+  },
+  "en_topic_ru": {
+    "n": 196,
+    "auc_model": [
+      0.596,
+      0.6243,
+      0.5733
+    ],
+    "auc_rules": 0.505,
+    "recall_model": [
+      0.7857,
+      0.8571,
+      0.8163
+    ],
+    "recall_rules": 0.0204,
+    "fpr_model": [
+      0.7653,
+      0.7755,
+      0.6837
+    ],
+    "fpr_rules": 0.0102,
+    "early_model": [
+      null,
+      null,
+      null
+    ],
+    "early_rules": null
+  },
+  "kazllm_kk": {
+    "n": 80,
+    "auc_model": [
+      0.7356,
+      0.7475,
+      0.6425
+    ],
+    "auc_rules": 0.5125,
+    "recall_model": [
+      0.8,
+      0.75,
+      0.675
+    ],
+    "recall_rules": 0.0,
+    "fpr_model": [
+      0.35,
+      0.325,
+      0.525
+    ],
+    "fpr_rules": 0.0,
+    "early_model": [
+      null,
+      null,
+      null
+    ],
+    "early_rules": null
+  },
+  "youtube_kz_orig": {
+    "n": 4,
+    "auc_model": [
+      null,
+      null,
+      null
+    ],
+    "auc_rules": null,
+    "recall_model": [
+      0.75,
+      1.0,
+      1.0
+    ],
+    "recall_rules": 0.0,
+    "fpr_model": [
+      null,
+      null,
+      null
+    ],
+    "fpr_rules": null,
+    "early_model": [
+      null,
+      null,
+      null
+    ],
+    "early_rules": null
+  }
+}
