@@ -17,6 +17,7 @@ checkpoints/
 # сырые внешние данные: аудио и первичные выгрузки (лицензии разные,
 # часть нельзя распространять) — в git только обработанные транскрипты и манифест
 data/external/raw/
+data/external/work/
 *.wav
 *.mp3
 *.m4a
@@ -25,3 +26,6 @@ data/external/raw/
 # секреты
 .env
 kaggle.json
+
+# локальные бинарники (llama.cpp и т.п.)
+tools/

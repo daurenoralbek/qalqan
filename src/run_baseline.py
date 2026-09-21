@@ -7,6 +7,7 @@
   * запас по времени — срабатывание ДО запроса целевого действия, а не в момент.
 """
 
+import argparse
 import json
 import statistics as st
 from pathlib import Path
@@ -60,8 +61,15 @@ def evaluate(dialogues, threshold: float):
 
 
 def main():
-    D = [json.loads(l) for l in open(CORPUS, encoding="utf-8")]
-    test = [d for d in D if d["split"] == "test"]
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--corpus", default=str(CORPUS))
+    ap.add_argument("--split", default="test",
+                    help="какой split брать из корпуса (для corpus_holdout.jsonl — holdout)")
+    ap.add_argument("--out", default=str(OUT))
+    args = ap.parse_args()
+
+    D = [json.loads(l) for l in open(args.corpus, encoding="utf-8")]
+    test = [d for d in D if d["split"] == args.split]
 
     print(f"Тестовая выборка: {len(test)} диалогов\n")
     print(f"{'порог':>6s} {'prec':>7s} {'recall':>7s} {'F1':>7s} {'FPR':>7s} "
@@ -79,9 +87,11 @@ def main():
               f"{r['fpr']:7.3f} {alert:>9s} {lead:>7s} {share:>8s}")
 
     best = max(results, key=lambda r: r["f1"])
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    json.dump({"test_size": len(test), "sweep": results, "best_by_f1": best},
-              open(OUT, "w"), ensure_ascii=False, indent=2)
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    json.dump({"corpus": Path(args.corpus).name, "split": args.split,
+               "test_size": len(test), "sweep": results, "best_by_f1": best},
+              open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
 
     print(f"\nЛучший по F1: порог {best['threshold']}, F1 {best['f1']:.3f}, FPR {best['fpr']:.3f}")
     every_nth = round(1 / best["fpr"]) if best["fpr"] else None

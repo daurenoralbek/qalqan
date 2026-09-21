@@ -1,0 +1,809 @@
+{
+  "holdout_synthetic": {
+    "n": 1000,
+    "n_scam": 500,
+    "n_benign": 500,
+    "roc_auc": 0.7833,
+    "sweep": [
+      {
+        "threshold": 0.6,
+        "precision": 0.7447,
+        "recall": 0.7,
+        "f1": 0.7216,
+        "fpr": 0.24,
+        "tp": 350,
+        "fp": 120,
+        "tn": 380,
+        "fn": 150,
+        "median_alert_turn": 5.0,
+        "median_alert_frac": 0.583,
+        "median_alert_sec": null,
+        "median_lead_turns": 3.0,
+        "share_alerted_before_action": 0.734
+      },
+      {
+        "threshold": 0.7,
+        "precision": 0.738,
+        "recall": 0.676,
+        "f1": 0.7056,
+        "fpr": 0.24,
+        "tp": 338,
+        "fp": 120,
+        "tn": 380,
+        "fn": 162,
+        "median_alert_turn": 5.0,
+        "median_alert_frac": 0.636,
+        "median_alert_sec": null,
+        "median_lead_turns": 2.0,
+        "share_alerted_before_action": 0.6667
+      },
+      {
+        "threshold": 0.8,
+        "precision": 0.7705,
+        "recall": 0.638,
+        "f1": 0.698,
+        "fpr": 0.19,
+        "tp": 319,
+        "fp": 95,
+        "tn": 405,
+        "fn": 181,
+        "median_alert_turn": 6,
+        "median_alert_frac": 0.7,
+        "median_alert_sec": null,
+        "median_lead_turns": 2.0,
+        "share_alerted_before_action": 0.5213
+      },
+      {
+        "threshold": 0.9,
+        "precision": 1.0,
+        "recall": 0.394,
+        "f1": 0.5653,
+        "fpr": 0.0,
+        "tp": 197,
+        "fp": 0,
+        "tn": 500,
+        "fn": 303,
+        "median_alert_turn": 7,
+        "median_alert_frac": 0.833,
+        "median_alert_sec": null,
+        "median_lead_turns": 0,
+        "share_alerted_before_action": 0.0
+      },
+      {
+        "threshold": 0.95,
+        "precision": 1.0,
+        "recall": 0.326,
+        "f1": 0.4917,
+        "fpr": 0.0,
+        "tp": 163,
+        "fp": 0,
+        "tn": 500,
+        "fn": 337,
+        "median_alert_turn": 7,
+        "median_alert_frac": 0.857,
+        "median_alert_sec": null,
+        "median_lead_turns": 0,
+        "share_alerted_before_action": 0.0
+      }
+    ],
+    "any_flag_share": {
+      "benign": 0.24,
+      "scam": 0.7
+    },
+    "dialogues_with_flag": {
+      "scam": {
+        "sms_code_request": 119,
+        "secrecy_demand": 92,
+        "time_pressure": 80,
+        "keep_line_open": 68,
+        "emotional_urgency": 58,
+        "safe_account": 44,
+        "scarcity_pressure": 43,
+        "unrequested_loan": 42,
+        "exit_fee_trap": 36,
+        "actor_handoff": 35,
+        "device_lockout": 34,
+        "service_disconnection_threat": 22,
+        "guaranteed_returns": 19,
+        "remote_access_request": 18,
+        "unsolicited_link": 18,
+        "credential_harvesting": 13,
+        "manufactured_urgency": 13
+      },
+      "benign": {
+        "scarcity_pressure": 59,
+        "benefit_lure": 31,
+        "time_pressure": 28,
+        "no_callback_possible": 25,
+        "credential_harvesting": 20,
+        "secrecy_demand": 16
+      }
+    }
+  },
+  "en_bank_orig": {
+    "n": 422,
+    "n_scam": 211,
+    "n_benign": 211,
+    "roc_auc": 0.5024,
+    "sweep": [
+      {
+        "threshold": 0.6,
+        "precision": 1.0,
+        "recall": 0.0047,
+        "f1": 0.0094,
+        "fpr": 0.0,
+        "tp": 1,
+        "fp": 0,
+        "tn": 211,
+        "fn": 210,
+        "median_alert_turn": 6,
+        "median_alert_frac": 0.538,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.7,
+        "precision": 1.0,
+        "recall": 0.0047,
+        "f1": 0.0094,
+        "fpr": 0.0,
+        "tp": 1,
+        "fp": 0,
+        "tn": 211,
+        "fn": 210,
+        "median_alert_turn": 6,
+        "median_alert_frac": 0.538,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.8,
+        "precision": 1.0,
+        "recall": 0.0047,
+        "f1": 0.0094,
+        "fpr": 0.0,
+        "tp": 1,
+        "fp": 0,
+        "tn": 211,
+        "fn": 210,
+        "median_alert_turn": 6,
+        "median_alert_frac": 0.538,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.9,
+        "precision": 1.0,
+        "recall": 0.0047,
+        "f1": 0.0094,
+        "fpr": 0.0,
+        "tp": 1,
+        "fp": 0,
+        "tn": 211,
+        "fn": 210,
+        "median_alert_turn": 6,
+        "median_alert_frac": 0.538,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.95,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "tn": 211,
+        "fn": 211,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      }
+    ],
+    "any_flag_share": {
+      "scam": 0.0047,
+      "benign": 0.0
+    },
+    "dialogues_with_flag": {
+      "scam": {
+        "remote_access_request": 1
+      },
+      "benign": {}
+    }
+  },
+  "en_bank_ru": {
+    "n": 422,
+    "n_scam": 211,
+    "n_benign": 211,
+    "roc_auc": 0.5047,
+    "sweep": [
+      {
+        "threshold": 0.6,
+        "precision": 1.0,
+        "recall": 0.0095,
+        "f1": 0.0188,
+        "fpr": 0.0,
+        "tp": 2,
+        "fp": 0,
+        "tn": 211,
+        "fn": 209,
+        "median_alert_turn": 4.5,
+        "median_alert_frac": 0.603,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.7,
+        "precision": 1.0,
+        "recall": 0.0095,
+        "f1": 0.0188,
+        "fpr": 0.0,
+        "tp": 2,
+        "fp": 0,
+        "tn": 211,
+        "fn": 209,
+        "median_alert_turn": 4.5,
+        "median_alert_frac": 0.603,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.8,
+        "precision": 1.0,
+        "recall": 0.0047,
+        "f1": 0.0094,
+        "fpr": 0.0,
+        "tp": 1,
+        "fp": 0,
+        "tn": 211,
+        "fn": 210,
+        "median_alert_turn": 6,
+        "median_alert_frac": 0.538,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.9,
+        "precision": 1.0,
+        "recall": 0.0047,
+        "f1": 0.0094,
+        "fpr": 0.0,
+        "tp": 1,
+        "fp": 0,
+        "tn": 211,
+        "fn": 210,
+        "median_alert_turn": 6,
+        "median_alert_frac": 0.538,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.95,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "tn": 211,
+        "fn": 211,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      }
+    ],
+    "any_flag_share": {
+      "scam": 0.0095,
+      "benign": 0.0
+    },
+    "dialogues_with_flag": {
+      "scam": {
+        "manufactured_urgency": 1,
+        "remote_access_request": 1
+      },
+      "benign": {}
+    }
+  },
+  "en_topic_orig": {
+    "n": 196,
+    "n_scam": 98,
+    "n_benign": 98,
+    "roc_auc": 0.5051,
+    "sweep": [
+      {
+        "threshold": 0.6,
+        "precision": 1.0,
+        "recall": 0.0102,
+        "f1": 0.0202,
+        "fpr": 0.0,
+        "tp": 1,
+        "fp": 0,
+        "tn": 98,
+        "fn": 97,
+        "median_alert_turn": 2,
+        "median_alert_frac": 0.75,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.7,
+        "precision": 1.0,
+        "recall": 0.0102,
+        "f1": 0.0202,
+        "fpr": 0.0,
+        "tp": 1,
+        "fp": 0,
+        "tn": 98,
+        "fn": 97,
+        "median_alert_turn": 2,
+        "median_alert_frac": 0.75,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.8,
+        "precision": 1.0,
+        "recall": 0.0102,
+        "f1": 0.0202,
+        "fpr": 0.0,
+        "tp": 1,
+        "fp": 0,
+        "tn": 98,
+        "fn": 97,
+        "median_alert_turn": 2,
+        "median_alert_frac": 0.75,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.9,
+        "precision": 1.0,
+        "recall": 0.0102,
+        "f1": 0.0202,
+        "fpr": 0.0,
+        "tp": 1,
+        "fp": 0,
+        "tn": 98,
+        "fn": 97,
+        "median_alert_turn": 2,
+        "median_alert_frac": 0.75,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.95,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "tn": 98,
+        "fn": 98,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      }
+    ],
+    "any_flag_share": {
+      "scam": 0.0102,
+      "benign": 0.0
+    },
+    "dialogues_with_flag": {
+      "scam": {
+        "remote_access_request": 1
+      },
+      "benign": {}
+    }
+  },
+  "en_topic_ru": {
+    "n": 196,
+    "n_scam": 98,
+    "n_benign": 98,
+    "roc_auc": 0.505,
+    "sweep": [
+      {
+        "threshold": 0.6,
+        "precision": 0.6667,
+        "recall": 0.0204,
+        "f1": 0.0396,
+        "fpr": 0.0102,
+        "tp": 2,
+        "fp": 1,
+        "tn": 97,
+        "fn": 96,
+        "median_alert_turn": 3.0,
+        "median_alert_frac": 0.792,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.7,
+        "precision": 0.6667,
+        "recall": 0.0204,
+        "f1": 0.0396,
+        "fpr": 0.0102,
+        "tp": 2,
+        "fp": 1,
+        "tn": 97,
+        "fn": 96,
+        "median_alert_turn": 3.0,
+        "median_alert_frac": 0.792,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.8,
+        "precision": 0.5,
+        "recall": 0.0102,
+        "f1": 0.02,
+        "fpr": 0.0102,
+        "tp": 1,
+        "fp": 1,
+        "tn": 97,
+        "fn": 97,
+        "median_alert_turn": 2,
+        "median_alert_frac": 0.75,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.9,
+        "precision": 0.5,
+        "recall": 0.0102,
+        "f1": 0.02,
+        "fpr": 0.0102,
+        "tp": 1,
+        "fp": 1,
+        "tn": 97,
+        "fn": 97,
+        "median_alert_turn": 2,
+        "median_alert_frac": 0.75,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.95,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 0.0102,
+        "tp": 0,
+        "fp": 1,
+        "tn": 97,
+        "fn": 98,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      }
+    ],
+    "any_flag_share": {
+      "scam": 0.0204,
+      "benign": 0.0102
+    },
+    "dialogues_with_flag": {
+      "scam": {
+        "remote_access_request": 1,
+        "manufactured_urgency": 1
+      },
+      "benign": {
+        "safe_account": 1
+      }
+    }
+  },
+  "korccvi_orig": {
+    "n": 400,
+    "n_scam": 200,
+    "n_benign": 200,
+    "roc_auc": 0.5,
+    "sweep": [
+      {
+        "threshold": 0.6,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "tn": 200,
+        "fn": 200,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.7,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "tn": 200,
+        "fn": 200,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.8,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "tn": 200,
+        "fn": 200,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.9,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "tn": 200,
+        "fn": 200,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.95,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "tn": 200,
+        "fn": 200,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      }
+    ],
+    "any_flag_share": {
+      "scam": 0.0,
+      "benign": 0.0
+    },
+    "dialogues_with_flag": {
+      "scam": {},
+      "benign": {}
+    }
+  },
+  "korccvi_ru": {
+    "n": 400,
+    "n_scam": 200,
+    "n_benign": 200,
+    "roc_auc": 0.505,
+    "sweep": [
+      {
+        "threshold": 0.6,
+        "precision": 1.0,
+        "recall": 0.01,
+        "f1": 0.0198,
+        "fpr": 0.0,
+        "tp": 2,
+        "fp": 0,
+        "tn": 200,
+        "fn": 198,
+        "median_alert_turn": 19.5,
+        "median_alert_frac": 0.95,
+        "median_alert_sec": 117.143,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.7,
+        "precision": 1.0,
+        "recall": 0.01,
+        "f1": 0.0198,
+        "fpr": 0.0,
+        "tp": 2,
+        "fp": 0,
+        "tn": 200,
+        "fn": 198,
+        "median_alert_turn": 19.5,
+        "median_alert_frac": 0.95,
+        "median_alert_sec": 117.143,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.8,
+        "precision": 1.0,
+        "recall": 0.005,
+        "f1": 0.01,
+        "fpr": 0.0,
+        "tp": 1,
+        "fp": 0,
+        "tn": 200,
+        "fn": 199,
+        "median_alert_turn": 35,
+        "median_alert_frac": 0.9,
+        "median_alert_sec": 173.636,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.9,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "tn": 200,
+        "fn": 200,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.95,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "tn": 200,
+        "fn": 200,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      }
+    ],
+    "any_flag_share": {
+      "scam": 0.01,
+      "benign": 0.0
+    },
+    "dialogues_with_flag": {
+      "scam": {
+        "secrecy_demand": 1,
+        "time_pressure": 1
+      },
+      "benign": {}
+    }
+  },
+  "youtube_kz_orig": {
+    "n": 4,
+    "n_scam": 4,
+    "n_benign": 0,
+    "roc_auc": null,
+    "sweep": [
+      {
+        "threshold": 0.6,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": null,
+        "tp": 0,
+        "fp": 0,
+        "tn": 0,
+        "fn": 4,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.7,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": null,
+        "tp": 0,
+        "fp": 0,
+        "tn": 0,
+        "fn": 4,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.8,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": null,
+        "tp": 0,
+        "fp": 0,
+        "tn": 0,
+        "fn": 4,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.9,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": null,
+        "tp": 0,
+        "fp": 0,
+        "tn": 0,
+        "fn": 4,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      },
+      {
+        "threshold": 0.95,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": null,
+        "tp": 0,
+        "fp": 0,
+        "tn": 0,
+        "fn": 4,
+        "median_alert_turn": null,
+        "median_alert_frac": null,
+        "median_alert_sec": null,
+        "median_lead_turns": null,
+        "share_alerted_before_action": null
+      }
+    ],
+    "any_flag_share": {
+      "scam": 0.0
+    },
+    "dialogues_with_flag": {
+      "scam": {},
+      "benign": {}
+    }
+  }
+}

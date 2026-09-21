@@ -1,1 +1,10 @@
 pyyaml>=6.0
+
+# внешний тест (src/*_external.py, transcribe_youtube.py, translate_kazllm.py)
+scikit-learn>=1.5
+transformers>=4.45
+ctranslate2>=4.4
+faster-whisper>=1.1
+yt-dlp
+huggingface_hub
+# + llama.cpp (llama-server) в tools/llama.cpp — для KazLLM
