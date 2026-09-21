@@ -15,7 +15,8 @@
 | `korccvi` | 200 вишинговых звонков, опубликованных финрегулятором Кореи (FSS, «보이스피싱 지킴이») | 200 звонков в госорганы, вузы, магазины (AI Hub, NIA) | ko | **реальные**, ASR Naver CLOVA с диаризацией и таймкодами | [KorCCVi v2](https://github.com/selfcontrol7/Korean_Voice_Phishing_Detection), см. `DATA.md`: данные FSS/AI Hub, **не распространять** ни в исходном, ни в производном виде; использование — локальная исследовательская оценка |
 | `en_bank` | 211 звонков скамеров со скам-бейтерами (YouTube, ASR) | 211 звонков в банковскую поддержку (HarperValleyBank) | en | **реальная речь**; HarperValley — ролевые звонки с реальной речью | [rajkirant/scam-detection](https://github.com/rajkirant/scam-detection) (MIT) ; HarperValleyBank — CC-BY-4.0 |
 | `en_topic` | 98 тех же реальных скам-звонков | 98 легитимных звонков **на ту же тему**, написанных вручную и переписанных вслепую | en | scam реальные, benign авторские | там же (MIT) |
-| `youtube_kz` | 6 публичных роликов с записями звонков мошенников в Казахстан | — | ru / kk | **реальная речь**, ASR Whisper large-v3 | YouTube; только локальная оценка, без публикации |
+| `youtube_kz` | 4 звонка мошенников казахстанцам из 6 скачанных роликов (2 — не записи звонков, исключены; `youtube_kz_annotations.json`) | — | ru | **реальная речь**, ASR Whisper large-v3 | YouTube; только локальная оценка, без публикации |
+| `kazllm_kk` | 20 + 20 звонков из `korccvi` и 20 + 20 из `en_bank`, первые 15 реплик | те же | kk | **перевод реальных звонков** моделью ISSAI KazLLM-1.0-8B (Q4), 99,7% реплик прошли проверку на казахский | условия исходных наборов + лицензия KazLLM (CC-BY-NC-4.0) |
 
 Отобраны, но **не использованы**: Kaggle `teeconnie/scam-and-non-scam-call-conversation-dataset`
 (полусинтетика ChatGPT, лицензия CC BY-NC-ND — перевод запрещён), Kaggle `mealss/call-transcripts-scam-determinations`
@@ -37,7 +38,9 @@
 ```
 prepare_external.py     raw/ → work/<set>_orig.jsonl        (нарезка на реплики, ≤40 реплик)
 translate_external.py   → work/<set>_ru.jsonl                (NLLB-200 600M, CTranslate2 int8)
-translate_kazllm.py     → work/kazllm_kk.jsonl               (KazLLM-8B Q4, llama.cpp; ko→ru→kk, en→kk)
+translate_kazllm.py     → work/kazllm_kk.jsonl               (KazLLM-8B Q4, llama.cpp; ko→ru→kk, en→kk;
+                                                               инструкция на казахском — с русской модель
+                                                               отвечает по-русски)
 transcribe_youtube.py   → work/youtube_kz_asr.jsonl          (faster-whisper large-v3)
 run_external_baseline.py → results/external_baseline_rules.json
 ```
