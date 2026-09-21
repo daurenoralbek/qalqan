@@ -33,6 +33,8 @@ tools/
 # пакет для Kaggle собирается скриптом
 kaggle/build/
 kaggle/output/
+kaggle/output_fed/
+results/**/_*.log
 
 # сборка Hugging Face Space
 demo/space_build/
