@@ -29,3 +29,6 @@ kaggle.json
 
 # локальные бинарники (llama.cpp и т.п.)
 tools/
+
+# пакет для Kaggle собирается скриптом
+kaggle/build/
