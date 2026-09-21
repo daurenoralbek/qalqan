@@ -1,0 +1,7 @@
+# зависимости демо (локально и для Hugging Face Space)
+streamlit>=1.40
+altair>=5
+pandas
+torch
+transformers>=4.45
+peft>=0.13
