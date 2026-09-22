@@ -34,7 +34,11 @@ tools/
 kaggle/build/
 kaggle/output/
 kaggle/output_fed/
+kaggle/output_v3/
+kaggle/output_fed_v3/
 results/**/_*.log
 
 # сборка Hugging Face Space
 demo/space_build/
+demo/live_logs/
+demo/audio/

@@ -41,10 +41,13 @@ def ms(xs, pct=False):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--pattern", default="xlmr-lora-s*")
-    ap.add_argument("--out", default=str(RES / "detector_summary.md"))
+    ap.add_argument("--res-dir", default=str(RES), help="папка с detector_eval_*.json")
+    ap.add_argument("--out", default=None, help="по умолчанию <res-dir>/detector_summary.md")
     args = ap.parse_args()
+    res = Path(args.res_dir)
+    args.out = args.out or str(res / "detector_summary.md")
 
-    files = sorted(glob.glob(str(RES / f"detector_eval_{args.pattern}.json")))
+    files = sorted(glob.glob(str(res / f"detector_eval_{args.pattern}.json")))
     runs = [json.load(open(f, encoding="utf-8")) for f in files]
     if not runs:
         raise SystemExit(f"нет файлов results/detector_eval_{args.pattern}.json")

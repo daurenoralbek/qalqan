@@ -5,7 +5,7 @@
 приём манипуляции? Если да — корпус бесполезен: на реальных звонках такой
 детектор развалится (это и произошло с корпусом v1, см. topics.yaml).
 
-Три проверки:
+Четыре проверки:
   1. Красные флаги — каждый значимый флаг должен встречаться в ОБОИХ классах,
      иначе модель выучит словарь.
   2. Темы (v2) — у каждой темы должны быть оба класса примерно поровну,
@@ -14,6 +14,11 @@
      регрессия на символьных n-граммах) учится на первых k репликах train
      и проверяется на шаблонном holdout. Для инкрементальной детекции первая
      реплика (приветствие) НЕ должна выдавать класс: в v1 её AUC был 0.911.
+  4. Стилистические пробы (v3) — та же регрессия, но видит только
+     пунктуацию или только длины реплик (по 20 символов), без слов. Если
+     форма реплик выдаёт класс, модель может выучить стиль автора корпуса
+     вместо приёма манипуляции. При расширении фразобанка v3 так нашлись
+     слишком длинные ответы абонента в легитимных звонках (проба 0.74).
 """
 
 import json
@@ -27,6 +32,7 @@ TRAIN = GEN / "corpus_train.jsonl"
 HOLDOUT = GEN / "corpus_holdout.jsonl"
 
 FIRST_TURN_AUC_MAX = 0.65      # выше — приветствие выдаёт класс
+STYLE_AUC_MAX = 0.65           # выше — форма реплик (не слова) выдаёт класс
 TOPIC_SHARE_RANGE = (0.35, 0.65)
 
 
@@ -113,6 +119,34 @@ def probe_start(train, holdout):
     return res
 
 
+def probe_style(train, holdout):
+    """AUC регрессии, которая видит только форму реплик, а не слова."""
+    import re
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import roc_auc_score
+
+    def lens(speaker):
+        return lambda d: " ".join(f"LEN{min(len(t['text']) // 20, 6)}" for t in d["turns"]
+                                  if speaker in (None, t["speaker"])) or "x"
+    views = {
+        "пунктуация": lambda d: " ".join(re.findall(r"[^\w\s]", " ".join(t["text"] for t in d["turns"]))) or "x",
+        "длины реплик": lens(None),
+        "длины реплик звонящего": lens("caller"),
+        "длины ответов абонента": lens("victim"),
+    }
+    ytr = [d["label"] == "scam" for d in train]
+    yho = [d["label"] == "scam" for d in holdout]
+    res = {}
+    for name, f in views.items():
+        vec = TfidfVectorizer(analyzer="word", token_pattern=r"\S+")
+        lr = LogisticRegression(max_iter=3000, C=2).fit(vec.fit_transform(map(f, train)), ytr)
+        res[name] = roc_auc_score(yho, lr.predict_proba(vec.transform(map(f, holdout)))[:, 1])
+        flag = "" if res[name] <= STYLE_AUC_MAX else "  ← форма выдаёт класс"
+        print(f"  {name:24s} AUC {res[name]:.3f}{flag}")
+    return res
+
+
 def main():
     D = load(CORPUS)
     print("═" * 78 + "\n1. КРАСНЫЕ ФЛАГИ (corpus.jsonl)\n" + "═" * 78)
@@ -124,13 +158,20 @@ def main():
     print("\n" + "═" * 78 + "\n3. ПРОБА «НАЧАЛО РАЗГОВОРА»: TF-IDF + логрегрессия, "
           "train → шаблонный holdout\n" + "═" * 78)
     train = [d for d in load(TRAIN) if d["split"] == "train"]
-    res = probe_start(train, load(HOLDOUT))
+    holdout = load(HOLDOUT)
+    res = probe_start(train, holdout)
+
+    print("\n" + "═" * 78 + "\n4. СТИЛИСТИЧЕСКИЕ ПРОБЫ: только форма реплик, без слов\n" + "═" * 78)
+    style = probe_style(train, holdout)
 
     print("\n" + "═" * 78 + "\nИТОГ\n" + "═" * 78)
     print(f"  флагов только в одном классе:  {len(trivial)}")
     print(f"  тем, выдающих класс:           {len(bad_topics)}" + (f"  {bad_topics}" if bad_topics else ""))
     verdict = "OK" if res[1] <= FIRST_TURN_AUC_MAX else "ПРОБЛЕМА: приветствие выдаёт класс"
     print(f"  AUC по реплике 0:              {res[1]:.3f} (порог {FIRST_TURN_AUC_MAX})  {verdict}")
+    worst = max(style, key=style.get)
+    verdict = "OK" if style[worst] <= STYLE_AUC_MAX else "ПРОБЛЕМА: форма реплик выдаёт класс"
+    print(f"  стилистическая проба, максимум: {style[worst]:.3f} ({worst}; порог {STYLE_AUC_MAX})  {verdict}")
     print(f"  AUC простейшей модели по всему диалогу: {res[99]:.3f} — нижняя планка для обученной модели")
 
 

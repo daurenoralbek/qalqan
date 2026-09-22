@@ -22,6 +22,14 @@ v2 (topics.yaml) — тема звонка не несёт информации 
   * число реплик и вероятность ответа абонента на S0/S1 одинаковы для классов.
 Классы расходятся со стадии S2 — там, где начинается манипуляция.
 
+v3 (*_ext.yaml, fillers.yaml) — расширение фразобанка:
+  * в каждом пуле 6–8 самостоятельных формулировок вместо 1–3, чтобы разбиение
+    по шаблонам (make_template_holdout.py) делило пулы без пересечений;
+  * часть казахских реплик — смешанная речь внутри одной фразы;
+  * нейтральные реплики («Секунду, проверяю», «Алло, слышите?») вставляются
+    после стадии с одной и той же вероятностью в обоих классах: в живом
+    разговоре много реплик без информации о классе.
+
 Выход: JSONL, одна строка — один диалог.
 """
 
@@ -43,6 +51,7 @@ TAX = ROOT / "data" / "taxonomy"
 EARLY = ("S0", "S1")          # стадии с общими пулами темы
 P_S1 = 0.7                    # вероятность стадии S1 — одинакова для обоих классов
 P_VICTIM = 0.85               # вероятность ответа абонента — одинакова для обоих классов
+P_FILLER = 0.12               # v3: нейтральная реплика после стадии — одинаково для обоих классов
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -50,8 +59,22 @@ def _yaml(name):
     return yaml.safe_load(open(TAX / name, encoding="utf-8"))
 
 
-def load_taxonomy() -> Dict:
-    return {
+def merge_ext(base, ext):
+    """v3: дописать реплики из *_ext.yaml в те же пулы базового фразобанка.
+    Словари сливаются рекурсивно, списки реплик — конкатенацией без повторов."""
+    if isinstance(base, dict) and isinstance(ext, dict):
+        out = dict(base)
+        for k, v in ext.items():
+            out[k] = merge_ext(base[k], v) if k in base else v
+        return out
+    if isinstance(base, list) and isinstance(ext, list):
+        return base + [x for x in ext if x not in base]
+    return ext
+
+
+def load_taxonomy(ext: bool = True) -> Dict:
+    """ext=False — фразобанк v2 без расширения (для сравнения v2 и v3)."""
+    tax = {
         "stages": _yaml("stages.yaml"),
         "scam": _yaml("scam_scenarios.yaml"),
         "benign": _yaml("benign_scenarios.yaml"),
@@ -59,7 +82,17 @@ def load_taxonomy() -> Dict:
         "pb_scam": _yaml("phrasebank_scam.yaml"),
         "pb_benign": _yaml("phrasebank_benign.yaml"),
         "topics": _yaml("topics.yaml"),
+        "fillers": {},
     }
+    if ext:
+        for key, name in (("pb_scam", "phrasebank_scam_ext.yaml"),
+                          ("pb_benign", "phrasebank_benign_ext.yaml"),
+                          ("topics", "topics_ext.yaml")):
+            if (TAX / name).exists():
+                tax[key] = merge_ext(tax[key], _yaml(name))
+        if (TAX / "fillers.yaml").exists():
+            tax["fillers"] = _yaml("fillers.yaml")
+    return tax
 
 
 def weighted_choice(rng: random.Random, items: List[Dict], key: str = "weight"):
@@ -235,6 +268,20 @@ class DialogueGenerator:
                 turns.append(self._turn(len(turns), "victim", ctx.fill(raw), stage, lang,
                                         "ответ абонента", raw))
 
+    def _maybe_filler(self, turns, lang_profile, ctx):
+        """Нейтральная реплика — пул и вероятность одинаковы для обоих классов."""
+        fl = self.tax.get("fillers") or {}
+        if not fl or self.rng.random() >= P_FILLER:
+            return
+        speaker = "caller" if self.rng.random() < 0.6 else "victim"
+        lang = self.pick_lang(lang_profile)
+        raw = self.pick_utterance(fl.get(speaker), lang)
+        if raw:
+            t = self._turn(len(turns), speaker, ctx.fill(raw), turns[-1]["stage"] if turns else "S0",
+                           lang, "нейтральная реплика", raw)
+            t["filler"] = True
+            turns.append(t)
+
     def _early_stages(self, topic: str) -> List[str]:
         return ["S0"] + (["S1"] if self.has_s1(topic) and self.rng.random() < P_S1 else [])
 
@@ -266,6 +313,7 @@ class DialogueGenerator:
             if stage in EARLY:
                 self._early_stage(turns, topic, stage, lang_profile["id"], profile["id"], ctx,
                                   self.stage_meta[stage]["name_ru"])
+                self._maybe_filler(turns, lang_profile["id"], ctx)
                 continue
             stage_pb = pb.get(stage, {})
             caller_pool = stage_pb.get("caller")
@@ -292,6 +340,7 @@ class DialogueGenerator:
                 if raw:
                     turns.append(self._turn(len(turns), "victim", ctx.fill(raw),
                                             stage, lang, "ответ жертвы", raw))
+            self._maybe_filler(turns, lang_profile["id"], ctx)
 
         return {
             "label": "scam",
@@ -329,6 +378,7 @@ class DialogueGenerator:
             if stage in EARLY:
                 self._early_stage(turns, topic, stage, lang_profile["id"], profile["id"], ctx,
                                   self.stage_meta[stage]["name_ru"])
+                self._maybe_filler(turns, lang_profile["id"], ctx)
                 continue
             stage_pb = pb.get(stage, {})
             caller_pool = stage_pb.get("caller")
@@ -360,6 +410,7 @@ class DialogueGenerator:
                 if raw:
                     turns.append(self._turn(len(turns), "victim", ctx.fill(raw),
                                             stage, lang, "ответ абонента", raw))
+            self._maybe_filler(turns, lang_profile["id"], ctx)
 
         return {
             "label": "benign",

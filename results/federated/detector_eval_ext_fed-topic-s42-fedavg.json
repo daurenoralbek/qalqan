@@ -1,0 +1,286 @@
+{
+  "model_dir": "..\\models\\fed\\fed-topic-s42-fedavg",
+  "accumulator": {
+    "mode": "raw",
+    "a": 1.0,
+    "threshold": 0.9990638361701966,
+    "max_fpr": 0.05
+  },
+  "rules_threshold": 0.6,
+  "sets": {
+    "korccvi_ru": {
+      "n": 400,
+      "n_scam": 200,
+      "model": {
+        "roc_auc": 0.826,
+        "calibrated": {
+          "threshold": 0.9991,
+          "precision": 0.7,
+          "recall": 0.77,
+          "f1": 0.7333,
+          "fpr": 0.33,
+          "tp": 154,
+          "fp": 66,
+          "tn": 134,
+          "fn": 46,
+          "median_alert_turn": 1.0,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        },
+        "@rules_recall": {
+          "threshold": 1.0,
+          "precision": 1.0,
+          "recall": 0.02,
+          "f1": 0.0392,
+          "fpr": 0.0,
+          "tp": 4,
+          "fp": 0,
+          "tn": 200,
+          "fn": 196,
+          "median_alert_turn": 13.5,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        },
+        "@rules_fpr": {
+          "threshold": 1.0,
+          "precision": 1.0,
+          "recall": 0.02,
+          "f1": 0.0392,
+          "fpr": 0.0,
+          "tp": 4,
+          "fp": 0,
+          "tn": 200,
+          "fn": 196,
+          "median_alert_turn": 13.5,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      },
+      "rules": {
+        "roc_auc": 0.505,
+        "@0.6": {
+          "threshold": 0.6,
+          "precision": 1.0,
+          "recall": 0.01,
+          "f1": 0.0198,
+          "fpr": 0.0,
+          "tp": 2,
+          "fp": 0,
+          "tn": 200,
+          "fn": 198,
+          "median_alert_turn": 19.5,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      }
+    },
+    "en_bank_ru": {
+      "n": 422,
+      "n_scam": 211,
+      "model": {
+        "roc_auc": 0.8408,
+        "calibrated": {
+          "threshold": 0.9991,
+          "precision": 0.8478,
+          "recall": 0.5545,
+          "f1": 0.6705,
+          "fpr": 0.0995,
+          "tp": 117,
+          "fp": 21,
+          "tn": 190,
+          "fn": 94,
+          "median_alert_turn": 3,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        },
+        "@rules_recall": {
+          "threshold": 1.0,
+          "precision": 1.0,
+          "recall": 0.0142,
+          "f1": 0.028,
+          "fpr": 0.0,
+          "tp": 3,
+          "fp": 0,
+          "tn": 211,
+          "fn": 208,
+          "median_alert_turn": 1,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        },
+        "@rules_fpr": {
+          "threshold": 1.0,
+          "precision": 1.0,
+          "recall": 0.237,
+          "f1": 0.3831,
+          "fpr": 0.0,
+          "tp": 50,
+          "fp": 0,
+          "tn": 211,
+          "fn": 161,
+          "median_alert_turn": 2.0,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      },
+      "rules": {
+        "roc_auc": 0.5047,
+        "@0.6": {
+          "threshold": 0.6,
+          "precision": 1.0,
+          "recall": 0.0095,
+          "f1": 0.0188,
+          "fpr": 0.0,
+          "tp": 2,
+          "fp": 0,
+          "tn": 211,
+          "fn": 209,
+          "median_alert_turn": 4.5,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      }
+    },
+    "en_topic_ru": {
+      "n": 196,
+      "n_scam": 98,
+      "model": {
+        "roc_auc": 0.5597,
+        "calibrated": {
+          "threshold": 0.9991,
+          "precision": 0.5243,
+          "recall": 0.551,
+          "f1": 0.5373,
+          "fpr": 0.5,
+          "tp": 54,
+          "fp": 49,
+          "tn": 49,
+          "fn": 44,
+          "median_alert_turn": 2.0,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        },
+        "@rules_recall": {
+          "threshold": 1.0,
+          "precision": 0.4,
+          "recall": 0.0204,
+          "f1": 0.0388,
+          "fpr": 0.0306,
+          "tp": 2,
+          "fp": 3,
+          "tn": 95,
+          "fn": 96,
+          "median_alert_turn": 1.0,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        },
+        "@rules_fpr": {
+          "threshold": 1.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fpr": 0.0,
+          "tp": 0,
+          "fp": 0,
+          "tn": 98,
+          "fn": 98,
+          "median_alert_turn": null,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      },
+      "rules": {
+        "roc_auc": 0.505,
+        "@0.6": {
+          "threshold": 0.6,
+          "precision": 0.6667,
+          "recall": 0.0204,
+          "f1": 0.0396,
+          "fpr": 0.0102,
+          "tp": 2,
+          "fp": 1,
+          "tn": 97,
+          "fn": 96,
+          "median_alert_turn": 3.0,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      }
+    },
+    "youtube_kz_orig": {
+      "n": 4,
+      "n_scam": 4,
+      "model": {
+        "roc_auc": null,
+        "calibrated": {
+          "threshold": 0.9991,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6667,
+          "fpr": null,
+          "tp": 2,
+          "fp": 0,
+          "tn": 0,
+          "fn": 2,
+          "median_alert_turn": 12.5,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      },
+      "rules": {
+        "roc_auc": null,
+        "@0.6": {
+          "threshold": 0.6,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fpr": null,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 4,
+          "median_alert_turn": null,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      }
+    },
+    "kazllm_kk": {
+      "n": 80,
+      "n_scam": 40,
+      "model": {
+        "roc_auc": 0.7694,
+        "calibrated": {
+          "threshold": 0.9991,
+          "precision": 0.7667,
+          "recall": 0.575,
+          "f1": 0.6571,
+          "fpr": 0.175,
+          "tp": 23,
+          "fp": 7,
+          "tn": 33,
+          "fn": 17,
+          "median_alert_turn": 1,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      },
+      "rules": {
+        "roc_auc": 0.5125,
+        "@0.6": {
+          "threshold": 0.6,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fpr": 0.0,
+          "tp": 0,
+          "fp": 0,
+          "tn": 40,
+          "fn": 40,
+          "median_alert_turn": null,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      }
+    }
+  }
+}

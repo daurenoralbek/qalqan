@@ -1,0 +1,255 @@
+{
+  "split": "profile",
+  "device": "cuda",
+  "total_epochs": 3.0,
+  "banks": [
+    {
+      "dialogues": 1314,
+      "scam": 654,
+      "scenarios": [
+        "SC01",
+        "SC02",
+        "SC03",
+        "SC04",
+        "SC05",
+        "SC06",
+        "SC07",
+        "SC08",
+        "SC09",
+        "SC10",
+        "SC11"
+      ],
+      "topics": [
+        "bank",
+        "clinic",
+        "credit",
+        "delivery",
+        "invest",
+        "job",
+        "pension",
+        "relative",
+        "tech_support",
+        "telecom",
+        "telecom_security"
+      ],
+      "profiles": [
+        "compliant",
+        "elderly"
+      ]
+    },
+    {
+      "dialogues": 1420,
+      "scam": 715,
+      "scenarios": [
+        "SC01",
+        "SC02",
+        "SC03",
+        "SC04",
+        "SC05",
+        "SC06",
+        "SC07",
+        "SC08",
+        "SC09",
+        "SC10",
+        "SC11"
+      ],
+      "topics": [
+        "bank",
+        "clinic",
+        "credit",
+        "delivery",
+        "invest",
+        "job",
+        "pension",
+        "relative",
+        "tech_support",
+        "telecom",
+        "telecom_security"
+      ],
+      "profiles": [
+        "hesitant"
+      ]
+    },
+    {
+      "dialogues": 666,
+      "scam": 331,
+      "scenarios": [
+        "SC01",
+        "SC02",
+        "SC03",
+        "SC04",
+        "SC05",
+        "SC06",
+        "SC07",
+        "SC08",
+        "SC09",
+        "SC10",
+        "SC11"
+      ],
+      "topics": [
+        "bank",
+        "clinic",
+        "credit",
+        "delivery",
+        "invest",
+        "job",
+        "pension",
+        "relative",
+        "tech_support",
+        "telecom",
+        "telecom_security"
+      ],
+      "profiles": [
+        "suspicious"
+      ]
+    }
+  ],
+  "methods": {
+    "central": {
+      "val_auc": 0.84,
+      "val": {
+        "threshold": 0.9993,
+        "precision": 0.9339,
+        "recall": 0.7067,
+        "f1": 0.8046,
+        "fpr": 0.05,
+        "tp": 212,
+        "fp": 15,
+        "tn": 285,
+        "fn": 88,
+        "median_alert_turn": 4.0,
+        "median_lead_turns": 3,
+        "share_alerted_before_action": 0.9357
+      }
+    },
+    "local_0": {
+      "val_auc": 0.8078,
+      "val": {
+        "threshold": 0.9983,
+        "precision": 0.9206,
+        "recall": 0.58,
+        "f1": 0.7117,
+        "fpr": 0.05,
+        "tp": 174,
+        "fp": 15,
+        "tn": 285,
+        "fn": 126,
+        "median_alert_turn": 4.0,
+        "median_lead_turns": 3,
+        "share_alerted_before_action": 0.964
+      }
+    },
+    "local_1": {
+      "val_auc": 0.8175,
+      "val": {
+        "threshold": 0.9999,
+        "precision": 0.9176,
+        "recall": 0.5567,
+        "f1": 0.6929,
+        "fpr": 0.05,
+        "tp": 167,
+        "fp": 15,
+        "tn": 285,
+        "fn": 133,
+        "median_alert_turn": 4,
+        "median_lead_turns": 3.5,
+        "share_alerted_before_action": 0.9015
+      }
+    },
+    "local_2": {
+      "val_auc": 0.7313,
+      "val": {
+        "threshold": 0.6928,
+        "precision": 0.8913,
+        "recall": 0.41,
+        "f1": 0.5616,
+        "fpr": 0.05,
+        "tp": 123,
+        "fp": 15,
+        "tn": 285,
+        "fn": 177,
+        "median_alert_turn": 5,
+        "median_lead_turns": 2.0,
+        "share_alerted_before_action": 0.69
+      }
+    },
+    "fedavg": {
+      "val_auc": 0.824,
+      "val": {
+        "threshold": 0.9992,
+        "precision": 0.9148,
+        "recall": 0.5367,
+        "f1": 0.6765,
+        "fpr": 0.05,
+        "tp": 161,
+        "fp": 15,
+        "tn": 285,
+        "fn": 139,
+        "median_alert_turn": 4,
+        "median_lead_turns": 3,
+        "share_alerted_before_action": 0.9767
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "val_auc": 0.702,
+          "val": {
+            "threshold": 0.6134,
+            "precision": 0.8906,
+            "recall": 0.38,
+            "f1": 0.5327,
+            "fpr": 0.0467,
+            "tp": 114,
+            "fp": 14,
+            "tn": 286,
+            "fn": 186,
+            "median_alert_turn": 4.0,
+            "median_lead_turns": 2.0,
+            "share_alerted_before_action": 0.8261
+          }
+        },
+        {
+          "round": 2,
+          "val_auc": 0.8063,
+          "val": {
+            "threshold": 0.8188,
+            "precision": 0.9138,
+            "recall": 0.53,
+            "f1": 0.6709,
+            "fpr": 0.05,
+            "tp": 159,
+            "fp": 15,
+            "tn": 285,
+            "fn": 141,
+            "median_alert_turn": 5,
+            "median_lead_turns": 2,
+            "share_alerted_before_action": 0.8397
+          }
+        },
+        {
+          "round": 3,
+          "val_auc": 0.824,
+          "val": {
+            "threshold": 0.9992,
+            "precision": 0.9148,
+            "recall": 0.5367,
+            "f1": 0.6765,
+            "fpr": 0.05,
+            "tp": 161,
+            "fp": 15,
+            "tn": 285,
+            "fn": 139,
+            "median_alert_turn": 4,
+            "median_lead_turns": 3,
+            "share_alerted_before_action": 0.9767
+          }
+        }
+      ],
+      "communication": {
+        "trainable_params": 1476866,
+        "mb_per_update": 5.91,
+        "total_mb_all_banks": 106.3
+      }
+    }
+  }
+}

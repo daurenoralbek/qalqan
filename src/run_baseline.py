@@ -102,9 +102,11 @@ def main():
     print(f"  2. Запас до целевого действия — медиана {best['median_lead_turns']:.0f} реплик, "
           f"вовремя успевает лишь в {best['share_alerted_before_action']:.0%} случаев")
     print(f"  3. Пропуск {missed:.0%} мошеннических диалогов (recall {best['recall']:.1%})")
-    print("\n  Разброс по порогам показывает суть проблемы правил: при нулевом FPR")
-    print("  (порог 0.9) recall падает до 32%, а предупредить заранее удаётся в 5% случаев.")
-    print(f"\nСохранено → {OUT}")
+    r09 = next(r for r in results if r["threshold"] == 0.9)
+    print("\n  Разброс по порогам показывает суть проблемы правил: при почти нулевом FPR")
+    print(f"  (порог 0.9, FPR {r09['fpr']:.1%}) recall падает до {r09['recall']:.0%}, "
+          f"а предупредить заранее удаётся в {r09['share_alerted_before_action'] or 0:.0%} случаев.")
+    print(f"\nСохранено → {out}")
 
 
 if __name__ == "__main__":
