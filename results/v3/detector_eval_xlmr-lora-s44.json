@@ -1,0 +1,636 @@
+{
+  "model_dir": "models/v3/xlmr-lora-s44",
+  "accumulator": {
+    "mode": "raw",
+    "a": 1.0,
+    "threshold": 0.9953520761260987,
+    "max_fpr": 0.05
+  },
+  "rules_threshold": 0.6,
+  "sets": {
+    "holdout": {
+      "n": 1000,
+      "n_scam": 500,
+      "model": {
+        "roc_auc": 0.8446,
+        "calibrated": {
+          "threshold": 0.9954,
+          "precision": 0.9382,
+          "recall": 0.668,
+          "f1": 0.7804,
+          "fpr": 0.044,
+          "tp": 334,
+          "fp": 22,
+          "tn": 478,
+          "fn": 166,
+          "median_alert_turn": 4.0,
+          "median_lead_turns": 3.0,
+          "share_alerted_before_action": 0.9237
+        },
+        "@rules_recall": {
+          "threshold": 0.9999,
+          "precision": 1.0,
+          "recall": 0.41,
+          "f1": 0.5816,
+          "fpr": 0.0,
+          "tp": 205,
+          "fp": 0,
+          "tn": 500,
+          "fn": 295,
+          "median_alert_turn": 6,
+          "median_lead_turns": 2.0,
+          "share_alerted_before_action": 0.6765
+        },
+        "@rules_fpr": {
+          "threshold": 0.4743,
+          "precision": 0.6402,
+          "recall": 0.84,
+          "f1": 0.7266,
+          "fpr": 0.472,
+          "tp": 420,
+          "fp": 236,
+          "tn": 264,
+          "fn": 80,
+          "median_alert_turn": 2.0,
+          "median_lead_turns": 5.0,
+          "share_alerted_before_action": 0.9792
+        },
+        "breakdown": {
+          "lang:kk-ru:benign": {
+            "fired": 5,
+            "n": 142,
+            "share": 0.035
+          },
+          "lang:kk-ru:scam": {
+            "fired": 96,
+            "n": 148,
+            "share": 0.649
+          },
+          "lang:kk:benign": {
+            "fired": 4,
+            "n": 132,
+            "share": 0.03
+          },
+          "lang:kk:scam": {
+            "fired": 79,
+            "n": 135,
+            "share": 0.585
+          },
+          "lang:ru:benign": {
+            "fired": 13,
+            "n": 226,
+            "share": 0.058
+          },
+          "lang:ru:scam": {
+            "fired": 159,
+            "n": 217,
+            "share": 0.733
+          },
+          "scenario:BN01": {
+            "fired": 7,
+            "n": 38,
+            "share": 0.184
+          },
+          "scenario:BN02": {
+            "fired": 0,
+            "n": 41,
+            "share": 0.0
+          },
+          "scenario:BN03": {
+            "fired": 1,
+            "n": 42,
+            "share": 0.024
+          },
+          "scenario:BN04": {
+            "fired": 7,
+            "n": 41,
+            "share": 0.171
+          },
+          "scenario:BN05": {
+            "fired": 0,
+            "n": 55,
+            "share": 0.0
+          },
+          "scenario:BN06": {
+            "fired": 2,
+            "n": 46,
+            "share": 0.043
+          },
+          "scenario:BN07": {
+            "fired": 0,
+            "n": 46,
+            "share": 0.0
+          },
+          "scenario:BN08": {
+            "fired": 1,
+            "n": 52,
+            "share": 0.019
+          },
+          "scenario:BN09": {
+            "fired": 3,
+            "n": 45,
+            "share": 0.067
+          },
+          "scenario:BN10": {
+            "fired": 1,
+            "n": 45,
+            "share": 0.022
+          },
+          "scenario:BN11": {
+            "fired": 0,
+            "n": 49,
+            "share": 0.0
+          },
+          "scenario:SC01": {
+            "fired": 39,
+            "n": 48,
+            "share": 0.812
+          },
+          "scenario:SC02": {
+            "fired": 25,
+            "n": 39,
+            "share": 0.641
+          },
+          "scenario:SC03": {
+            "fired": 37,
+            "n": 54,
+            "share": 0.685
+          },
+          "scenario:SC04": {
+            "fired": 29,
+            "n": 46,
+            "share": 0.63
+          },
+          "scenario:SC05": {
+            "fired": 25,
+            "n": 49,
+            "share": 0.51
+          },
+          "scenario:SC06": {
+            "fired": 11,
+            "n": 38,
+            "share": 0.289
+          },
+          "scenario:SC07": {
+            "fired": 32,
+            "n": 47,
+            "share": 0.681
+          },
+          "scenario:SC08": {
+            "fired": 37,
+            "n": 46,
+            "share": 0.804
+          },
+          "scenario:SC09": {
+            "fired": 33,
+            "n": 41,
+            "share": 0.805
+          },
+          "scenario:SC10": {
+            "fired": 37,
+            "n": 50,
+            "share": 0.74
+          },
+          "scenario:SC11": {
+            "fired": 29,
+            "n": 42,
+            "share": 0.69
+          }
+        }
+      },
+      "rules": {
+        "roc_auc": 0.4936,
+        "@0.6": {
+          "threshold": 0.6,
+          "precision": 0.4649,
+          "recall": 0.41,
+          "f1": 0.4357,
+          "fpr": 0.472,
+          "tp": 205,
+          "fp": 236,
+          "tn": 264,
+          "fn": 295,
+          "median_alert_turn": 6,
+          "median_lead_turns": 0.0,
+          "share_alerted_before_action": 0.4944
+        },
+        "breakdown": {
+          "lang:kk-ru:benign": {
+            "fired": 72,
+            "n": 142,
+            "share": 0.507
+          },
+          "lang:kk-ru:scam": {
+            "fired": 55,
+            "n": 148,
+            "share": 0.372
+          },
+          "lang:kk:benign": {
+            "fired": 53,
+            "n": 132,
+            "share": 0.402
+          },
+          "lang:kk:scam": {
+            "fired": 57,
+            "n": 135,
+            "share": 0.422
+          },
+          "lang:ru:benign": {
+            "fired": 111,
+            "n": 226,
+            "share": 0.491
+          },
+          "lang:ru:scam": {
+            "fired": 93,
+            "n": 217,
+            "share": 0.429
+          },
+          "scenario:BN01": {
+            "fired": 24,
+            "n": 38,
+            "share": 0.632
+          },
+          "scenario:BN02": {
+            "fired": 22,
+            "n": 41,
+            "share": 0.537
+          },
+          "scenario:BN03": {
+            "fired": 16,
+            "n": 42,
+            "share": 0.381
+          },
+          "scenario:BN04": {
+            "fired": 26,
+            "n": 41,
+            "share": 0.634
+          },
+          "scenario:BN05": {
+            "fired": 27,
+            "n": 55,
+            "share": 0.491
+          },
+          "scenario:BN06": {
+            "fired": 9,
+            "n": 46,
+            "share": 0.196
+          },
+          "scenario:BN07": {
+            "fired": 22,
+            "n": 46,
+            "share": 0.478
+          },
+          "scenario:BN08": {
+            "fired": 24,
+            "n": 52,
+            "share": 0.462
+          },
+          "scenario:BN09": {
+            "fired": 27,
+            "n": 45,
+            "share": 0.6
+          },
+          "scenario:BN10": {
+            "fired": 6,
+            "n": 45,
+            "share": 0.133
+          },
+          "scenario:BN11": {
+            "fired": 33,
+            "n": 49,
+            "share": 0.673
+          },
+          "scenario:SC01": {
+            "fired": 41,
+            "n": 48,
+            "share": 0.854
+          },
+          "scenario:SC02": {
+            "fired": 15,
+            "n": 39,
+            "share": 0.385
+          },
+          "scenario:SC03": {
+            "fired": 17,
+            "n": 54,
+            "share": 0.315
+          },
+          "scenario:SC04": {
+            "fired": 18,
+            "n": 46,
+            "share": 0.391
+          },
+          "scenario:SC05": {
+            "fired": 6,
+            "n": 49,
+            "share": 0.122
+          },
+          "scenario:SC06": {
+            "fired": 15,
+            "n": 38,
+            "share": 0.395
+          },
+          "scenario:SC07": {
+            "fired": 18,
+            "n": 47,
+            "share": 0.383
+          },
+          "scenario:SC08": {
+            "fired": 32,
+            "n": 46,
+            "share": 0.696
+          },
+          "scenario:SC09": {
+            "fired": 26,
+            "n": 41,
+            "share": 0.634
+          },
+          "scenario:SC10": {
+            "fired": 7,
+            "n": 50,
+            "share": 0.14
+          },
+          "scenario:SC11": {
+            "fired": 10,
+            "n": 42,
+            "share": 0.238
+          }
+        }
+      }
+    },
+    "korccvi_ru": {
+      "n": 400,
+      "n_scam": 200,
+      "model": {
+        "roc_auc": 0.7758,
+        "calibrated": {
+          "threshold": 0.9954,
+          "precision": 0.6181,
+          "recall": 0.89,
+          "f1": 0.7295,
+          "fpr": 0.55,
+          "tp": 178,
+          "fp": 110,
+          "tn": 90,
+          "fn": 22,
+          "median_alert_turn": 1.0,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        },
+        "@rules_recall": {
+          "threshold": 1.0,
+          "precision": 1.0,
+          "recall": 0.01,
+          "f1": 0.0198,
+          "fpr": 0.0,
+          "tp": 2,
+          "fp": 0,
+          "tn": 200,
+          "fn": 198,
+          "median_alert_turn": 16.0,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        },
+        "@rules_fpr": {
+          "threshold": 1.0,
+          "precision": 1.0,
+          "recall": 0.085,
+          "f1": 0.1567,
+          "fpr": 0.0,
+          "tp": 17,
+          "fp": 0,
+          "tn": 200,
+          "fn": 183,
+          "median_alert_turn": 15,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      },
+      "rules": {
+        "roc_auc": 0.505,
+        "@0.6": {
+          "threshold": 0.6,
+          "precision": 1.0,
+          "recall": 0.01,
+          "f1": 0.0198,
+          "fpr": 0.0,
+          "tp": 2,
+          "fp": 0,
+          "tn": 200,
+          "fn": 198,
+          "median_alert_turn": 19.5,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      }
+    },
+    "en_bank_ru": {
+      "n": 422,
+      "n_scam": 211,
+      "model": {
+        "roc_auc": 0.8975,
+        "calibrated": {
+          "threshold": 0.9954,
+          "precision": 0.8842,
+          "recall": 0.7962,
+          "f1": 0.8379,
+          "fpr": 0.1043,
+          "tp": 168,
+          "fp": 22,
+          "tn": 189,
+          "fn": 43,
+          "median_alert_turn": 3.0,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        },
+        "@rules_recall": {
+          "threshold": 1.0,
+          "precision": 1.0,
+          "recall": 0.0095,
+          "f1": 0.0188,
+          "fpr": 0.0,
+          "tp": 2,
+          "fp": 0,
+          "tn": 211,
+          "fn": 209,
+          "median_alert_turn": 2.5,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        },
+        "@rules_fpr": {
+          "threshold": 0.9999,
+          "precision": 1.0,
+          "recall": 0.2512,
+          "f1": 0.4015,
+          "fpr": 0.0,
+          "tp": 53,
+          "fp": 0,
+          "tn": 211,
+          "fn": 158,
+          "median_alert_turn": 3,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      },
+      "rules": {
+        "roc_auc": 0.5047,
+        "@0.6": {
+          "threshold": 0.6,
+          "precision": 1.0,
+          "recall": 0.0095,
+          "f1": 0.0188,
+          "fpr": 0.0,
+          "tp": 2,
+          "fp": 0,
+          "tn": 211,
+          "fn": 209,
+          "median_alert_turn": 4.5,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      }
+    },
+    "en_topic_ru": {
+      "n": 196,
+      "n_scam": 98,
+      "model": {
+        "roc_auc": 0.6226,
+        "calibrated": {
+          "threshold": 0.9954,
+          "precision": 0.561,
+          "recall": 0.7041,
+          "f1": 0.6244,
+          "fpr": 0.551,
+          "tp": 69,
+          "fp": 54,
+          "tn": 44,
+          "fn": 29,
+          "median_alert_turn": 2,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        },
+        "@rules_recall": {
+          "threshold": 1.0,
+          "precision": 1.0,
+          "recall": 0.0204,
+          "f1": 0.04,
+          "fpr": 0.0,
+          "tp": 2,
+          "fp": 0,
+          "tn": 98,
+          "fn": 96,
+          "median_alert_turn": 3.5,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        },
+        "@rules_fpr": {
+          "threshold": 1.0,
+          "precision": 0.875,
+          "recall": 0.0714,
+          "f1": 0.1321,
+          "fpr": 0.0102,
+          "tp": 7,
+          "fp": 1,
+          "tn": 97,
+          "fn": 91,
+          "median_alert_turn": 4,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      },
+      "rules": {
+        "roc_auc": 0.505,
+        "@0.6": {
+          "threshold": 0.6,
+          "precision": 0.6667,
+          "recall": 0.0204,
+          "f1": 0.0396,
+          "fpr": 0.0102,
+          "tp": 2,
+          "fp": 1,
+          "tn": 97,
+          "fn": 96,
+          "median_alert_turn": 3.0,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      }
+    },
+    "youtube_kz_orig": {
+      "n": 4,
+      "n_scam": 4,
+      "model": {
+        "roc_auc": null,
+        "calibrated": {
+          "threshold": 0.9954,
+          "precision": 1.0,
+          "recall": 0.75,
+          "f1": 0.8571,
+          "fpr": null,
+          "tp": 3,
+          "fp": 0,
+          "tn": 0,
+          "fn": 1,
+          "median_alert_turn": 6,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      },
+      "rules": {
+        "roc_auc": null,
+        "@0.6": {
+          "threshold": 0.6,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fpr": null,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 4,
+          "median_alert_turn": null,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      }
+    },
+    "kazllm_kk": {
+      "n": 80,
+      "n_scam": 40,
+      "model": {
+        "roc_auc": 0.6981,
+        "calibrated": {
+          "threshold": 0.9954,
+          "precision": 0.5918,
+          "recall": 0.725,
+          "f1": 0.6517,
+          "fpr": 0.5,
+          "tp": 29,
+          "fp": 20,
+          "tn": 20,
+          "fn": 11,
+          "median_alert_turn": 1,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      },
+      "rules": {
+        "roc_auc": 0.5125,
+        "@0.6": {
+          "threshold": 0.6,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fpr": 0.0,
+          "tp": 0,
+          "fp": 0,
+          "tn": 40,
+          "fn": 40,
+          "median_alert_turn": null,
+          "median_lead_turns": null,
+          "share_alerted_before_action": null
+        }
+      }
+    }
+  }
+}
