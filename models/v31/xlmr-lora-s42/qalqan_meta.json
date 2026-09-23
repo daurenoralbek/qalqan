@@ -1,0 +1,134 @@
+{
+  "base_model": "FacebookAI/xlm-roberta-base",
+  "max_len": 256,
+  "best_epoch": 3,
+  "accumulator": {
+    "mode": "ewma",
+    "a": 0.5,
+    "threshold": 0.5763239557851446,
+    "max_fpr": 0.05
+  },
+  "val_at_calibration": {
+    "threshold": 0.5763,
+    "precision": 0.9364,
+    "recall": 0.7367,
+    "f1": 0.8246,
+    "fpr": 0.05,
+    "tp": 221,
+    "fp": 15,
+    "tn": 285,
+    "fn": 79,
+    "median_alert_turn": 4,
+    "median_lead_turns": 4,
+    "share_alerted_before_action": 0.9521
+  },
+  "history": [
+    {
+      "dialogue_auc": 0.8501,
+      "turn_auc": 0.8619,
+      "epoch": 1,
+      "train_seconds": 99.3,
+      "calibration": {
+        "mode": "ewma",
+        "a": 0.7,
+        "threshold": 0.7631502444574833,
+        "max_fpr": 0.05,
+        "val_early_share_of_actioned": 0.8506,
+        "val": {
+          "threshold": 0.7632,
+          "precision": 0.9348,
+          "recall": 0.7167,
+          "f1": 0.8113,
+          "fpr": 0.05,
+          "tp": 215,
+          "fp": 15,
+          "tn": 285,
+          "fn": 85,
+          "median_alert_turn": 4,
+          "median_lead_turns": 3,
+          "share_alerted_before_action": 0.8862
+        }
+      }
+    },
+    {
+      "dialogue_auc": 0.8371,
+      "turn_auc": 0.8687,
+      "epoch": 2,
+      "train_seconds": 99.7,
+      "calibration": {
+        "mode": "raw",
+        "a": 1.0,
+        "threshold": 0.986901269985199,
+        "max_fpr": 0.05,
+        "val_early_share_of_actioned": 0.8678,
+        "val": {
+          "threshold": 0.9869,
+          "precision": 0.9353,
+          "recall": 0.7233,
+          "f1": 0.8158,
+          "fpr": 0.05,
+          "tp": 217,
+          "fp": 15,
+          "tn": 285,
+          "fn": 83,
+          "median_alert_turn": 4,
+          "median_lead_turns": 3,
+          "share_alerted_before_action": 0.9042
+        }
+      }
+    },
+    {
+      "dialogue_auc": 0.8424,
+      "turn_auc": 0.8699,
+      "epoch": 3,
+      "train_seconds": 99.7,
+      "calibration": {
+        "mode": "ewma",
+        "a": 0.5,
+        "threshold": 0.5763239557851446,
+        "max_fpr": 0.05,
+        "val_early_share_of_actioned": 0.9138,
+        "val": {
+          "threshold": 0.5763,
+          "precision": 0.9364,
+          "recall": 0.7367,
+          "f1": 0.8246,
+          "fpr": 0.05,
+          "tp": 221,
+          "fp": 15,
+          "tn": 285,
+          "fn": 79,
+          "median_alert_turn": 4,
+          "median_lead_turns": 4,
+          "share_alerted_before_action": 0.9521
+        }
+      }
+    }
+  ],
+  "args": {
+    "model": "FacebookAI/xlm-roberta-base",
+    "train_file": "/kaggle/working/qalqan/data/generated/corpus_train.jsonl",
+    "out": "../models/xlmr-lora-s42",
+    "epochs": 3.0,
+    "lr": 0.0002,
+    "batch": 32,
+    "eval_batch": 128,
+    "max_len": 256,
+    "lora_r": 16,
+    "max_fpr": 0.05,
+    "train_limit": 0,
+    "val_limit": 0,
+    "threads": 0,
+    "seed": 42
+  },
+  "n_train_dialogues": 3400,
+  "n_val_dialogues": 600,
+  "n_train_prefixes": 30237,
+  "trainable_params": 1476866,
+  "total_params": 279522052,
+  "device": "cuda",
+  "torch": "2.10.0+cu128",
+  "platform": "Linux-6.12.90+-x86_64-with-glibc2.35",
+  "gpu": "Tesla T4",
+  "wall_seconds": 384.2
+}

@@ -44,3 +44,14 @@ demo/live_logs/
 demo/audio/
 kaggle/output_v31/
 kaggle/output_fed_v31/
+
+# Исключение: адаптер демо-модели (5,9 МБ) публикуется, чтобы демо
+# запускалось без переобучения. Остальные модели остаются вне git.
+!models/
+models/*
+!models/v31/
+models/v31/*
+!models/v31/xlmr-lora-s42/
+!models/v31/xlmr-lora-s42/*
+!models/v31/xlmr-lora-s42/*.safetensors
+models/v31/xlmr-lora-s42/preds/
