@@ -55,6 +55,8 @@ CONFIGS = {
     # двуязычная CTC-модель NVIDIA (казахский + русский), ONNX
     "nemo":             ("nemo", None, None, 4),
     "nemo-fp32":        ("nemo-fp32", None, None, 4),
+    # казахский Whisper turbo (дообучен на KSC2 и др.), конвертирован в CTranslate2
+    "kk-turbo":         ("models/asr/kazakh-turbo-ct2", 1, None, 4),
 }
 
 
@@ -119,12 +121,23 @@ def main():
     ap.add_argument("--audio", nargs="*", help="свои файлы; иначе записи youtube_kz")
     ap.add_argument("--ref", nargs="*", help="эталонные тексты к --audio")
     ap.add_argument("--lang", default="ru")
+    ap.add_argument("--fleurs", type=int, default=0,
+                    help="проверка на казахском: N записей FLEURS с эталонными расшифровками")
     ap.add_argument("--limit", type=int, default=0, help="взять первые N реплик записи")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
     items = []            # (имя, путь, эталонный текст)
-    if args.audio:
+    if args.fleurs:
+        import csv
+        hub = Path.home() / ".cache/huggingface/hub/datasets--google--fleurs/snapshots"
+        tsv = next(hub.glob("*/data/kk_kz/dev.tsv"))
+        wavs = {p.name: p for p in (ROOT / "data/external/raw/fleurs_kk").rglob("*.wav")}
+        for r in list(csv.reader(open(tsv, encoding="utf-8"), delimiter="\t"))[:args.fleurs]:
+            if r[1] in wavs:
+                items.append((r[0], wavs[r[1]], r[3]))       # id, wav, нормализованный эталон
+        args.lang = "kk"
+    elif args.audio:
         refs = args.ref or []
         for i, a in enumerate(args.audio):
             ref = Path(refs[i]).read_text(encoding="utf-8") if i < len(refs) else ""
@@ -137,16 +150,22 @@ def main():
 
     report = []
     for name, path, ref in items:
-        audio, utts = utterances(path)
+        if args.fleurs:                       # одна запись FLEURS = одна фраза, VAD не нужен
+            audio = L.load_audio(path)
+            utts = [L.Utterance(audio, 0.0, len(audio) / L.SR, 0.0, 0.0)]
+        else:
+            audio, utts = utterances(path)
         if args.limit:
             utts = utts[:args.limit]
-        print(f"\n=== {name}: {len(audio) / L.SR:.0f} с, {len(utts)} реплик"
-              f"{'' if ref else ' (эталона нет)'}", flush=True)
+        if not args.fleurs:
+            print(f"\n=== {name}: {len(audio) / L.SR:.0f} с, {len(utts)} реплик"
+                  f"{'' if ref else ' (эталона нет)'}", flush=True)
         for cfg in args.configs.split(","):
             hyp, sec = run(cfg, utts, args.lang)
             if ref:
                 wer, cer, nref = rates(hyp, ref)
-                print(f"  {cfg:20s} WER {wer:5.1%}  CER {cer:5.1%}  {sec:4.1f} с/реплика", flush=True)
+                if not args.fleurs:
+                    print(f"  {cfg:20s} WER {wer:5.1%}  CER {cer:5.1%}  {sec:4.1f} с/реплика", flush=True)
                 report.append({"запись": name, "конфигурация": cfg, "wer": round(wer, 4),
                                "cer": round(cer, 4), "сек_на_реплику": round(sec, 2),
                                "слов_в_эталоне": nref})
@@ -154,13 +173,16 @@ def main():
                 print(f"  {cfg:20s} {sec:4.1f} с/реплика │ {hyp[:110]}", flush=True)
     if report:
         import statistics as st
-        print("\nСреднее по записям:")
+        print("\nСреднее" + (f" по {len(items)} фразам FLEURS (казахский):" if args.fleurs
+                                else " по записям:"))
         for cfg in args.configs.split(","):
             rows = [r for r in report if r["конфигурация"] == cfg]
             if rows:
-                print(f"  {cfg:20s} WER {st.mean(r['wer'] for r in rows):5.1%}  "
-                      f"CER {st.mean(r['cer'] for r in rows):5.1%}  "
-                      f"{st.mean(r['сек_на_реплику'] for r in rows):4.1f} с/реплика")
+                w = sum(r["слов_в_эталоне"] for r in rows)
+                wer = sum(r["wer"] * r["слов_в_эталоне"] for r in rows) / max(1, w)
+                cer = sum(r["cer"] * r["слов_в_эталоне"] for r in rows) / max(1, w)
+                print(f"  {cfg:20s} WER {wer:5.1%}  CER {cer:5.1%}  "
+                      f"{st.mean(r['сек_на_реплику'] for r in rows):4.1f} с/фраза")
     if args.out and report:
         Path(args.out).parent.mkdir(parents=True, exist_ok=True)
         json.dump(report, open(args.out, "w", encoding="utf-8"), ensure_ascii=False, indent=2)

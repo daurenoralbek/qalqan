@@ -35,6 +35,7 @@ ENGINES = {}                                           # подпись в ин�
 def cached_engines():
     """Только модели, уже лежащие в кэше: ничего не скачиваем без спроса."""
     hub = Path.home() / ".cache" / "huggingface" / "hub"
+    kk_turbo = ROOT / "models" / "asr" / "kazakh-turbo-ct2"
     known = [("models--OpenVoiceOS--stt_kk_ru_fastconformer_hybrid_large_onnx",
               "nemo", "NVIDIA kk+ru — быстрая, двуязычная"),
              ("models--Systran--faster-whisper-small", "small", "Whisper small"),
@@ -47,6 +48,8 @@ def cached_engines():
     for d, engine, label in known:
         if (hub / d).exists():
             ENGINES[label] = engine
+    if kk_turbo.exists():                              # локальная, вне git
+        ENGINES["Казахская Whisper turbo — точная, но 22 с на фразу"] = str(kk_turbo)
     if not ENGINES:
         ENGINES["Whisper small"] = "small"
     return list(ENGINES)
