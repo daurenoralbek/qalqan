@@ -12,13 +12,13 @@ from common import D, MODEL_DIR, RULE_TH, load, redflags, risk_chart, score_last
 ROOT = Path(__file__).resolve().parent.parent
 LOGS = Path(__file__).parent / "live_logs"            # расшифровки — только локально (.gitignore)
 AUDIO_DIRS = [Path(__file__).parent / "audio", ROOT / "data" / "external" / "raw" / "youtube_ru"]
-LANGS = {"авто (русский / казахский)": None, "русский": "ru", "казахский": "kk"}
+LANGS = {"русский": "ru", "казахский": "kk", "авто — вдвое медленнее": None}
 SILENT_DB = -85.0                                      # ниже — микрофон фактически молчит
 
 
 @st.cache_resource(show_spinner="Загружаю распознавание речи (первый раз — до минуты)…")
 def load_asr(name):
-    return L.ASR(name, compute_type="int8", cpu_threads=8)
+    return L.ASR(name, compute_type="int8", cpu_threads=4)
 
 
 @st.cache_data(ttl=120, show_spinner=False)
@@ -32,10 +32,10 @@ def mics():
 def cached_whisper():
     """Только модели, уже лежащие в кэше: ничего не скачиваем без спроса."""
     hub = Path.home() / ".cache" / "huggingface" / "hub"
-    known = {"models--Systran--faster-whisper-large-v3": "large-v3",
-             "models--mobiuslabsgmbh--faster-whisper-large-v3-turbo": "large-v3-turbo",
+    known = {"models--Systran--faster-whisper-small": "small",             # от быстрой к точной
              "models--Systran--faster-whisper-medium": "medium",
-             "models--Systran--faster-whisper-small": "small"}
+             "models--mobiuslabsgmbh--faster-whisper-large-v3-turbo": "large-v3-turbo",
+             "models--Systran--faster-whisper-large-v3": "large-v3"}
     found = [v for k, v in known.items() if (hub / k).exists()]
     return found or ["large-v3"]
 
@@ -94,9 +94,12 @@ with st.sidebar:
             source = ("file", f, start_s)
         else:
             st.info(f"Положите аудиофайл в {AUDIO_DIRS[0].relative_to(ROOT)}.")
-    lang = LANGS[st.selectbox("Язык разговора", list(LANGS))]
+    lang = LANGS[st.selectbox("Язык разговора", list(LANGS),
+                              help="Автоопределение прогоняет распознавание дважды — задержка вдвое больше.")]
     asr_name = st.selectbox("Распознавание (Whisper)", cached_whisper(),
-                            help="large-v3 точнее, особенно на казахском, но медленнее на процессоре.")
+                            help="На процессоре ноутбука в реальном времени успевает small (~2 с на фразу). "
+                                 "large-v3-turbo и large-v3 точнее, особенно на казахском, но на этом "
+                                 "процессоре тратят 10–20 с на фразу — им нужна видеокарта.")
     min_sil = st.slider("Пауза, после которой реплика закончилась, мс", 300, 1200, 600, 50,
                         help="Меньше — быстрее тревога, но фразы чаще рвутся на части.")
 

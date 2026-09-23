@@ -42,3 +42,5 @@ results/**/_*.log
 demo/space_build/
 demo/live_logs/
 demo/audio/
+kaggle/output_v31/
+kaggle/output_fed_v31/

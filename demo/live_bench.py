@@ -38,8 +38,8 @@ def main():
     ap.add_argument("--start", type=float, default=0.0, help="начать с секунды")
     ap.add_argument("--max", type=float, default=None, help="взять не больше N секунд")
     ap.add_argument("--lang", default=None, help="ru / kk; по умолчанию — автоопределение")
-    ap.add_argument("--asr", default="large-v3")
-    ap.add_argument("--asr-threads", type=int, default=8)
+    ap.add_argument("--asr", default="small")
+    ap.add_argument("--asr-threads", type=int, default=4)
     ap.add_argument("--torch-threads", type=int, default=4)
     ap.add_argument("--min-silence-ms", type=int, default=600)
     ap.add_argument("--model-dir", default=None, help="по умолчанию — как в демо (common.MODEL_DIR)")
@@ -49,8 +49,8 @@ def main():
     args = ap.parse_args()
 
     if args.model_dir is None:
-        v3 = HERE.parent / "models" / "v3" / "xlmr-lora-s42"
-        args.model_dir = os.environ.get("QALQAN_MODEL_DIR", str(v3 if v3.exists() else HERE.parent / "models" / "xlmr-lora-s42"))
+        cur = HERE.parent / "models" / "v31" / "xlmr-lora-s42"
+        args.model_dir = os.environ.get("QALQAN_MODEL_DIR", str(cur if cur.exists() else HERE.parent / "models" / "xlmr-lora-s42"))
     torch.set_num_threads(args.torch_threads)
     model, tok, meta = D.load_trained(args.model_dir)
     enc, acc = D.PrefixEncoder(tok, meta["max_len"]), meta["accumulator"]

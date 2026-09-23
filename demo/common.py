@@ -15,8 +15,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))   # в Space detector.p
 import detector as D  # noqa: E402
 import redflags  # noqa: E402
 
-_V3 = ROOT / "models" / "v3" / "xlmr-lora-s42"          # корпус v3 (расширенный фразобанк)
-MODEL_DIR = Path(os.environ.get("QALQAN_MODEL_DIR", _V3 if _V3.exists() else ROOT / "models" / "xlmr-lora-s42"))
+_CUR = ROOT / "models" / "v31" / "xlmr-lora-s42"        # корпус v3.1 — текущая версия
+MODEL_DIR = Path(os.environ.get("QALQAN_MODEL_DIR", _CUR if _CUR.exists() else ROOT / "models" / "xlmr-lora-s42"))
 if not MODEL_DIR.exists() and (Path(__file__).parent / "model").exists():
     MODEL_DIR = Path(__file__).parent / "model"           # раскладка для Hugging Face Space
 RULE_TH = 0.6

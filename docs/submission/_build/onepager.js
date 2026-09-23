@@ -90,19 +90,22 @@ const RU = {
     ]],
     ["Ценность — измерено", [
       metrics([
-        ["Реальные звонки (вишинг; скам против звонков в банк; перевод на казахский), ROC AUC", "0.71–0.75", "0.50 — правила"],
-        ["Тревога ДО целевого действия (при равном FPR 10–23%)", "91–94%", "37–58% — правила"],
-        ["Каждый банк видел не все схемы: общая модель (FedAvg), val AUC", "0.839", "0.56–0.79 — банк в одиночку"],
+        ["Реальные звонки (вишинг; скам против звонков в банк; перевод на казахский), ROC AUC", "0.79–0.91", "0.50 — правила"],
+        ["Тревога ДО целевого действия, отложенный тест", "85%", "36% — правила"],
+        ["Ложные тревоги при том же recall, что у правил", "0.1%", "43% — правила"],
+        ["Каждый банк видел не все схемы: общая модель (FedAvg), ROC AUC", "0.756", "0.59–0.71 — банк в одиночку"],
+        ["Живой звонок: от конца фразы до тревоги (процессор ноутбука)", "3,3 с", "—"],
       ], ["Показатель", "Қалқан", "Сравнение"]),
       p([["Честно: ", { bold: true }], "на самом трудном наборе — легитимный звонок на ту же тему, что и мошеннический, — " +
-        "AUC пока 0.60; это главное направление доработки (расширение фразобанка)."], 20),
+        "AUC пока 0.67; это главное направление доработки. Корпус переделывался трижды: каждый раз находился признак, " +
+        "по которому задачу можно решить, не поняв приёма манипуляции (тема звонка, повтор формулировок, вежливость)."], 20),
       p([["Главный эффект: ", { bold: true }], "предупреждение успевает прозвучать, пока деньги ещё у клиента. " +
         "Каждый предотвращённый инцидент — это не возврат через Антифрод-центр, а отсутствие ущерба."], 20),
     ]],
     ["Новизна", [
       p(["По нашим данным, первый в Казахстане разговорный детектор мошенничества с ", ["ранним предупреждением на казахском", { bold: true }],
-        " и смешанной речи; открытый корпус с метрикой «тревога до целевого действия»; метод поиска артефакта " +
-        "«тема звонка выдаёт класс» в синтетических данных (найден и устранён в ходе работы); федеративная схема " +
+        " и смешанной речи; открытый корпус с метрикой «тревога до целевого действия»; метод поиска артефактов " +
+        "синтетики — три найдены и устранены в ходе работы (тема звонка, повтор формулировок, вежливость); федеративная схема " +
         "с LoRA для банков РК. Готовность — TRL 4 (прототип проверен на синтетике и на реальных публичных записях); " +
         "следующий шаг — пилот с банком на обезличенных звонках колл-центра."]),
     ]],
@@ -143,19 +146,23 @@ const EN = {
     ]],
     ["Value — measured", [
       metrics([
-        ["Real calls (vishing; scam vs genuine bank calls; Kazakh translation), ROC AUC", "0.71–0.75", "0.50 — rules"],
-        ["Alert BEFORE the target action (at equal FPR 10–23%)", "91–94%", "37–58% — rules"],
-        ["Each bank saw only some schemes: shared model (FedAvg), val AUC", "0.839", "0.56–0.79 — bank alone"],
+        ["Real calls (vishing; scam vs genuine bank calls; Kazakh translation), ROC AUC", "0.79–0.91", "0.50 — rules"],
+        ["Alert BEFORE the target action, held-out test", "85%", "36% — rules"],
+        ["False alarms at the same recall as the rules", "0.1%", "43% — rules"],
+        ["Each bank saw only some schemes: shared model (FedAvg), ROC AUC", "0.756", "0.59–0.71 — bank alone"],
+        ["Live call: from end of phrase to alert (laptop CPU)", "3.3 s", "—"],
       ], ["Metric", "Qalqan", "Baseline"]),
       p([["Honestly: ", { bold: true }], "on the hardest set — a genuine call on the same topic as the scam — " +
-        "AUC is 0.60 so far; this is the main direction of further work (a larger phrasebank)."], 20),
+        "AUC is 0.67 so far; this is the main direction of further work. The corpus was rebuilt three times: each time we " +
+        "found a cue that let a model solve the task without understanding the manipulation (call topic, repeated " +
+        "wordings, politeness)."], 20),
       p([["Key effect: ", { bold: true }], "the warning arrives while the money is still with the client. " +
         "Every prevented incident means no loss at all rather than a recovery through the Anti-Fraud Centre."], 20),
     ]],
     ["Novelty", [
       p(["To our knowledge, the first conversational scam detector in Kazakhstan with ", ["early warning in Kazakh", { bold: true }],
         " and code-switched speech; an open corpus with an “alert before the target action” metric; a method to detect the " +
-        "“call topic gives away the label” artefact in synthetic data (found and fixed during the project); federated LoRA " +
+        "artefacts in synthetic data — three found and fixed during the project (call topic, repeated wordings, politeness); federated LoRA " +
         "training for Kazakhstani banks. Readiness — TRL 4 (validated on synthetic data and real public recordings); " +
         "next step — a pilot with a bank on anonymised call-centre calls."]),
     ]],

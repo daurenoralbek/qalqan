@@ -1,0 +1,362 @@
+{
+  "model_dir": "/kaggle/working/qalqan/models/fed-topic-s42-local1",
+  "accumulator": {
+    "mode": "ewma",
+    "a": 0.7,
+    "threshold": 0.999628057918928,
+    "max_fpr": 0.05
+  },
+  "rules_threshold": 0.6,
+  "sets": {
+    "holdout": {
+      "n": 1000,
+      "n_scam": 500,
+      "model": {
+        "roc_auc": 0.6469,
+        "calibrated": {
+          "threshold": 0.9996,
+          "precision": 0.8471,
+          "recall": 0.266,
+          "f1": 0.4049,
+          "fpr": 0.048,
+          "tp": 133,
+          "fp": 24,
+          "tn": 476,
+          "fn": 367,
+          "median_alert_turn": 9,
+          "median_lead_turns": -1,
+          "share_alerted_before_action": 0.256
+        },
+        "@rules_recall": {
+          "threshold": 0.9941,
+          "precision": 0.6398,
+          "recall": 0.412,
+          "f1": 0.5012,
+          "fpr": 0.232,
+          "tp": 206,
+          "fp": 116,
+          "tn": 384,
+          "fn": 294,
+          "median_alert_turn": 7.0,
+          "median_lead_turns": 0.0,
+          "share_alerted_before_action": 0.4628
+        },
+        "@rules_fpr": {
+          "threshold": 0.8316,
+          "precision": 0.5905,
+          "recall": 0.62,
+          "f1": 0.6049,
+          "fpr": 0.43,
+          "tp": 310,
+          "fp": 215,
+          "tn": 285,
+          "fn": 190,
+          "median_alert_turn": 5.0,
+          "median_lead_turns": 3,
+          "share_alerted_before_action": 0.7371
+        },
+        "breakdown": {
+          "lang:kk-ru:benign": {
+            "fired": 4,
+            "n": 145,
+            "share": 0.028
+          },
+          "lang:kk-ru:scam": {
+            "fired": 45,
+            "n": 153,
+            "share": 0.294
+          },
+          "lang:kk:benign": {
+            "fired": 10,
+            "n": 127,
+            "share": 0.079
+          },
+          "lang:kk:scam": {
+            "fired": 24,
+            "n": 121,
+            "share": 0.198
+          },
+          "lang:ru:benign": {
+            "fired": 10,
+            "n": 228,
+            "share": 0.044
+          },
+          "lang:ru:scam": {
+            "fired": 64,
+            "n": 226,
+            "share": 0.283
+          },
+          "scenario:BN01": {
+            "fired": 6,
+            "n": 38,
+            "share": 0.158
+          },
+          "scenario:BN02": {
+            "fired": 2,
+            "n": 41,
+            "share": 0.049
+          },
+          "scenario:BN03": {
+            "fired": 0,
+            "n": 42,
+            "share": 0.0
+          },
+          "scenario:BN04": {
+            "fired": 4,
+            "n": 41,
+            "share": 0.098
+          },
+          "scenario:BN05": {
+            "fired": 5,
+            "n": 55,
+            "share": 0.091
+          },
+          "scenario:BN06": {
+            "fired": 0,
+            "n": 46,
+            "share": 0.0
+          },
+          "scenario:BN07": {
+            "fired": 0,
+            "n": 46,
+            "share": 0.0
+          },
+          "scenario:BN08": {
+            "fired": 0,
+            "n": 52,
+            "share": 0.0
+          },
+          "scenario:BN09": {
+            "fired": 7,
+            "n": 45,
+            "share": 0.156
+          },
+          "scenario:BN10": {
+            "fired": 0,
+            "n": 45,
+            "share": 0.0
+          },
+          "scenario:BN11": {
+            "fired": 0,
+            "n": 49,
+            "share": 0.0
+          },
+          "scenario:SC01": {
+            "fired": 34,
+            "n": 48,
+            "share": 0.708
+          },
+          "scenario:SC02": {
+            "fired": 5,
+            "n": 39,
+            "share": 0.128
+          },
+          "scenario:SC03": {
+            "fired": 28,
+            "n": 54,
+            "share": 0.519
+          },
+          "scenario:SC04": {
+            "fired": 3,
+            "n": 46,
+            "share": 0.065
+          },
+          "scenario:SC05": {
+            "fired": 4,
+            "n": 49,
+            "share": 0.082
+          },
+          "scenario:SC06": {
+            "fired": 2,
+            "n": 38,
+            "share": 0.053
+          },
+          "scenario:SC07": {
+            "fired": 18,
+            "n": 47,
+            "share": 0.383
+          },
+          "scenario:SC08": {
+            "fired": 16,
+            "n": 46,
+            "share": 0.348
+          },
+          "scenario:SC09": {
+            "fired": 12,
+            "n": 41,
+            "share": 0.293
+          },
+          "scenario:SC10": {
+            "fired": 0,
+            "n": 50,
+            "share": 0.0
+          },
+          "scenario:SC11": {
+            "fired": 11,
+            "n": 42,
+            "share": 0.262
+          }
+        }
+      },
+      "rules": {
+        "roc_auc": 0.5263,
+        "@0.6": {
+          "threshold": 0.6,
+          "precision": 0.4893,
+          "recall": 0.412,
+          "f1": 0.4473,
+          "fpr": 0.43,
+          "tp": 206,
+          "fp": 215,
+          "tn": 285,
+          "fn": 294,
+          "median_alert_turn": 7.0,
+          "median_lead_turns": 0.0,
+          "share_alerted_before_action": 0.3602
+        },
+        "breakdown": {
+          "lang:kk-ru:benign": {
+            "fired": 57,
+            "n": 145,
+            "share": 0.393
+          },
+          "lang:kk-ru:scam": {
+            "fired": 74,
+            "n": 153,
+            "share": 0.484
+          },
+          "lang:kk:benign": {
+            "fired": 50,
+            "n": 127,
+            "share": 0.394
+          },
+          "lang:kk:scam": {
+            "fired": 58,
+            "n": 121,
+            "share": 0.479
+          },
+          "lang:ru:benign": {
+            "fired": 108,
+            "n": 228,
+            "share": 0.474
+          },
+          "lang:ru:scam": {
+            "fired": 74,
+            "n": 226,
+            "share": 0.327
+          },
+          "scenario:BN01": {
+            "fired": 18,
+            "n": 38,
+            "share": 0.474
+          },
+          "scenario:BN02": {
+            "fired": 20,
+            "n": 41,
+            "share": 0.488
+          },
+          "scenario:BN03": {
+            "fired": 18,
+            "n": 42,
+            "share": 0.429
+          },
+          "scenario:BN04": {
+            "fired": 26,
+            "n": 41,
+            "share": 0.634
+          },
+          "scenario:BN05": {
+            "fired": 19,
+            "n": 55,
+            "share": 0.345
+          },
+          "scenario:BN06": {
+            "fired": 12,
+            "n": 46,
+            "share": 0.261
+          },
+          "scenario:BN07": {
+            "fired": 16,
+            "n": 46,
+            "share": 0.348
+          },
+          "scenario:BN08": {
+            "fired": 28,
+            "n": 52,
+            "share": 0.538
+          },
+          "scenario:BN09": {
+            "fired": 28,
+            "n": 45,
+            "share": 0.622
+          },
+          "scenario:BN10": {
+            "fired": 5,
+            "n": 45,
+            "share": 0.111
+          },
+          "scenario:BN11": {
+            "fired": 25,
+            "n": 49,
+            "share": 0.51
+          },
+          "scenario:SC01": {
+            "fired": 42,
+            "n": 48,
+            "share": 0.875
+          },
+          "scenario:SC02": {
+            "fired": 6,
+            "n": 39,
+            "share": 0.154
+          },
+          "scenario:SC03": {
+            "fired": 37,
+            "n": 54,
+            "share": 0.685
+          },
+          "scenario:SC04": {
+            "fired": 20,
+            "n": 46,
+            "share": 0.435
+          },
+          "scenario:SC05": {
+            "fired": 11,
+            "n": 49,
+            "share": 0.224
+          },
+          "scenario:SC06": {
+            "fired": 16,
+            "n": 38,
+            "share": 0.421
+          },
+          "scenario:SC07": {
+            "fired": 15,
+            "n": 47,
+            "share": 0.319
+          },
+          "scenario:SC08": {
+            "fired": 18,
+            "n": 46,
+            "share": 0.391
+          },
+          "scenario:SC09": {
+            "fired": 21,
+            "n": 41,
+            "share": 0.512
+          },
+          "scenario:SC10": {
+            "fired": 4,
+            "n": 50,
+            "share": 0.08
+          },
+          "scenario:SC11": {
+            "fired": 16,
+            "n": 42,
+            "share": 0.381
+          }
+        }
+      }
+    }
+  }
+}

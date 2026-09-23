@@ -30,6 +30,12 @@ v3 (*_ext.yaml, fillers.yaml) — расширение фразобанка:
     после стадии с одной и той же вероятностью в обоих классах: в живом
     разговоре много реплик без информации о классе.
 
+v3.1 — слова доверия и вежливости: в v3 «официальный», «спасибо», «хорошо»,
+«всего доброго» звучали в репликах звонящего только у легитимных звонков, и
+модель выучила «вежливый и официальный = не мошенник». Теперь мошенники тоже
+ссылаются на «официальность», благодарят и прощаются (пул closing — после
+целевого действия, как в жизни).
+
 Выход: JSONL, одна строка — один диалог.
 """
 
@@ -52,6 +58,7 @@ EARLY = ("S0", "S1")          # стадии с общими пулами тем
 P_S1 = 0.7                    # вероятность стадии S1 — одинакова для обоих классов
 P_VICTIM = 0.85               # вероятность ответа абонента — одинакова для обоих классов
 P_FILLER = 0.12               # v3: нейтральная реплика после стадии — одинаково для обоих классов
+P_CLOSE = 0.7                 # v3.1: мошенник вежливо прощается после целевого действия
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -341,6 +348,21 @@ class DialogueGenerator:
                     turns.append(self._turn(len(turns), "victim", ctx.fill(raw),
                                             stage, lang, "ответ жертвы", raw))
             self._maybe_filler(turns, lang_profile["id"], ctx)
+
+        # v3.1: вежливое завершение — только если разговор дошёл до целевого действия
+        closing = self.tax["pb_scam"].get("closing")
+        if closing and terminated_at is None and action_turn_idx >= 0 and self.rng.random() < P_CLOSE:
+            lang = self.pick_lang(lang_profile["id"])
+            raw = self.pick_utterance(closing.get("caller"), lang)
+            if raw:
+                turns.append(self._turn(len(turns), "caller", ctx.fill(raw), "S6", lang,
+                                        "вежливое завершение", raw))
+                if self.rng.random() < P_VICTIM:
+                    lang = self.pick_lang(lang_profile["id"])
+                    raw = self.pick_utterance(closing.get("victim"), lang)
+                    if raw:
+                        turns.append(self._turn(len(turns), "victim", ctx.fill(raw), "S6", lang,
+                                                "ответ жертвы", raw))
 
         return {
             "label": "scam",

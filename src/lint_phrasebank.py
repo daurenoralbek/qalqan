@@ -57,10 +57,15 @@ def pools(node, path=()):
                 yield from pools(v, path + (str(k),))
 
 
+NEW_POOLS = {("closing",)}      # пулы, которых нет в базовом файле намеренно (v3.1)
+
+
 def missing_paths(base, ext, path=()):
     if not isinstance(ext, dict):
         return
     for k, v in ext.items():
+        if path + (str(k),) in NEW_POOLS:
+            continue
         if not isinstance(base, dict) or k not in base:
             yield "/".join(path + (str(k),))
         else:

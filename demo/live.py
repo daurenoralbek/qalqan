@@ -216,7 +216,12 @@ class Segmenter:
 # Распознавание и детектор
 # ─────────────────────────────────────────────────────────────────────────
 class ASR:
-    def __init__(self, model: str = "large-v3", compute_type: str = "int8", cpu_threads: int = 8,
+    """faster-whisper на процессоре. Замер на Intel Core Ultra 7 255U (2 производительных
+    ядра из 12), фраза 6 с: small — 2,1 с, large-v3-turbo — 11 с, large-v3 — ещё медленнее.
+    Автоопределение языка прогоняет кодировщик второй раз и удваивает время, поэтому
+    язык разговора лучше задать. Больше 4 потоков на таком процессоре не помогает."""
+
+    def __init__(self, model: str = "small", compute_type: str = "int8", cpu_threads: int = 4,
                  beam_size: int = 1):
         from faster_whisper import WhisperModel
         self.name, self.beam = model, beam_size
