@@ -237,6 +237,15 @@ class ASR:
         return text, info.language, float(info.language_probability)
 
 
+def make_asr(engine: str, threads: int = 4, beam_size: int = 1):
+    """Движок распознавания по имени: nemo — двуязычная CTC-модель NVIDIA
+    (казахский + русский, ~0,3 с на фразу), остальное — модели Whisper."""
+    if engine.startswith("nemo"):
+        import asr_nemo
+        return asr_nemo.NemoASR(quant="int8" if engine == "nemo" else "", threads=threads)
+    return ASR(engine, cpu_threads=threads, beam_size=beam_size)
+
+
 @dataclass
 class LiveTurn:
     idx: int
@@ -309,8 +318,9 @@ class LiveSession:
             t0 = time.time()
             self.busy = True
             try:
-                prev = " ".join(t.text for t in self.turns[-2:])[-200:] or None
-                text, lang, lp = self.asr(u.audio, self.language, prev)
+                # подсказку предыдущим текстом не даём: на замере (src/asr_bench.py)
+                # Whisper начинает копировать её в распознанное, WER растёт на 5 п.п.
+                text, lang, lp = self.asr(u.audio, self.language, None)
                 t1 = time.time()
                 if not text:
                     continue

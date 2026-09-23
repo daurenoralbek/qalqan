@@ -38,7 +38,7 @@ def main():
     ap.add_argument("--start", type=float, default=0.0, help="начать с секунды")
     ap.add_argument("--max", type=float, default=None, help="взять не больше N секунд")
     ap.add_argument("--lang", default=None, help="ru / kk; по умолчанию — автоопределение")
-    ap.add_argument("--asr", default="small")
+    ap.add_argument("--asr", default="nemo", help="nemo (kk+ru) или модель Whisper: small, medium, large-v3…")
     ap.add_argument("--asr-threads", type=int, default=4)
     ap.add_argument("--torch-threads", type=int, default=4)
     ap.add_argument("--min-silence-ms", type=int, default=600)
@@ -61,7 +61,7 @@ def main():
         return float(torch.softmax(model(input_ids=x, attention_mask=torch.ones_like(x)).logits.float(), -1)[0, 1])
 
     t0 = time.time()
-    asr = L.ASR(args.asr, cpu_threads=args.asr_threads)
+    asr = L.make_asr(args.asr, threads=args.asr_threads)
     print(f"распознавание {args.asr} загружено за {time.time() - t0:.0f} с; детектор {Path(args.model_dir).name}")
     src = L.FileSource(args.file, start_s=args.start, max_s=args.max)
     print(f"звук {len(src.audio) / L.SR:.0f} с, проигрываю с реальной скоростью…\n")

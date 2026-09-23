@@ -18,7 +18,7 @@ SILENT_DB = -85.0                                      # ниже — микро
 
 @st.cache_resource(show_spinner="Загружаю распознавание речи (первый раз — до минуты)…")
 def load_asr(name):
-    return L.ASR(name, compute_type="int8", cpu_threads=4)
+    return L.make_asr(ENGINES[name], threads=4)
 
 
 @st.cache_data(ttl=120, show_spinner=False)
@@ -29,15 +29,27 @@ def mics():
         return []
 
 
-def cached_whisper():
+ENGINES = {}                                           # подпись в интерфейсе → имя движка
+
+
+def cached_engines():
     """Только модели, уже лежащие в кэше: ничего не скачиваем без спроса."""
     hub = Path.home() / ".cache" / "huggingface" / "hub"
-    known = {"models--Systran--faster-whisper-small": "small",             # от быстрой к точной
-             "models--Systran--faster-whisper-medium": "medium",
-             "models--mobiuslabsgmbh--faster-whisper-large-v3-turbo": "large-v3-turbo",
-             "models--Systran--faster-whisper-large-v3": "large-v3"}
-    found = [v for k, v in known.items() if (hub / k).exists()]
-    return found or ["large-v3"]
+    known = [("models--OpenVoiceOS--stt_kk_ru_fastconformer_hybrid_large_onnx",
+              "nemo", "NVIDIA kk+ru — быстрая, двуязычная"),
+             ("models--Systran--faster-whisper-small", "small", "Whisper small"),
+             ("models--Systran--faster-whisper-medium", "medium", "Whisper medium"),
+             ("models--mobiuslabsgmbh--faster-whisper-large-v3-turbo", "large-v3-turbo",
+              "Whisper large-v3-turbo — точная, но медленная на CPU"),
+             ("models--Systran--faster-whisper-large-v3", "large-v3",
+              "Whisper large-v3 — самая точная, для CPU слишком медленная")]
+    ENGINES.clear()
+    for d, engine, label in known:
+        if (hub / d).exists():
+            ENGINES[label] = engine
+    if not ENGINES:
+        ENGINES["Whisper small"] = "small"
+    return list(ENGINES)
 
 
 def audio_files():
@@ -94,12 +106,14 @@ with st.sidebar:
             source = ("file", f, start_s)
         else:
             st.info(f"Положите аудиофайл в {AUDIO_DIRS[0].relative_to(ROOT)}.")
-    lang = LANGS[st.selectbox("Язык разговора", list(LANGS),
-                              help="Автоопределение прогоняет распознавание дважды — задержка вдвое больше.")]
-    asr_name = st.selectbox("Распознавание (Whisper)", cached_whisper(),
-                            help="На процессоре ноутбука в реальном времени успевает small (~2 с на фразу). "
-                                 "large-v3-turbo и large-v3 точнее, особенно на казахском, но на этом "
-                                 "процессоре тратят 10–20 с на фразу — им нужна видеокарта.")
+    asr_name = st.selectbox("Распознавание речи", cached_engines(),
+                            help="NVIDIA kk+ru обучена сразу на казахском и русском, язык выбирать не нужно "
+                                 "и работает быстрее всех (~0,3 с на фразу). Модели Whisper на этом "
+                                 "процессоре тратят от 2 с (small) до 20 с (large-v3) на фразу.")
+    is_whisper = ENGINES.get(asr_name, "small") != "nemo"
+    lang = LANGS[st.selectbox("Язык разговора", list(LANGS), disabled=not is_whisper,
+                              help="Только для Whisper: автоопределение прогоняет распознавание дважды. "
+                                   "Двуязычной модели язык указывать не нужно.")] if is_whisper else None
     min_sil = st.slider("Пауза, после которой реплика закончилась, мс", 300, 1200, 600, 50,
                         help="Меньше — быстрее тревога, но фразы чаще рвутся на части.")
 
@@ -119,7 +133,7 @@ with st.sidebar:
     th = st.slider("Порог тревоги модели", 0.30, 0.99, float(round(acc["threshold"], 2)), 0.01,
                    help="По умолчанию — порог, выбранный на валидации (FPR ≤ 5%).")
     show_rules = st.checkbox("Показывать правила (красные флаги)", value=True)
-    st.caption(f"Модель: {MODEL_DIR.name} · распознавание: faster-whisper, локально. "
+    st.caption(f"Модель: {MODEL_DIR.name} · распознавание: {asr_name}, локально. "
                "Звук не сохраняется; расшифровка пишется только в demo/live_logs.")
 
 st.title("🎙️ Живой звонок")
